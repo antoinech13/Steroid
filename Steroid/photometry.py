@@ -895,7 +895,7 @@ class Photometry:
         
         
         for i in range(len(t)):
-            strg1 = str(t[i] - 0.5) + ' '
+            strg1 = str(t[i] + 0.5) + ' '
             strg2 = strg1
             strg3 = strg1
             strg4 = strg1
