@@ -54,16 +54,17 @@ class Photometry:
         self.nbOfStar = 0
         self.singleton = Singleton()
         self.starPassages = None
+  
         
         
     def FWHM(self, eps = 10):
         
         for i in range(len(self.detector.seqManager)):
             img = self.detector.getData(i)
-           
-            s = self.detector.correctStarsFromRotTest(self.stars, i, 1) + self.detector.avgDrif(i)
-            
+          
+            s = self.detector.correctStars(self.stars, i, 1)
             s = Utils.centred(s , img, eps)
+            
             
             fwhmOfOneImage = np.zeros((len(s), 2))
             
@@ -192,7 +193,7 @@ class Photometry:
         self.fwhm = []
         
     def getAppSize(self, idx):
-        r = self.getFwhm(idx)*2.3
+        r = self.getFwhm(idx)*2.1
         ri = 1.5*r
         re = 2*r
         
@@ -228,11 +229,11 @@ class Photometry:
             print("first image:", self.detector.seqManager.seq[idxF])
             print("last image:", self.detector.seqManager.seq[idxE])
             self.selectOnManuel(firstPos, idxF)
-            firstPos = self.detector.correctStarsFromRotTest(firstPos, idxF, -1) - self.detector.avgDrif(idxF)
+            firstPos = self.detector.correctStarsFromRot(firstPos, idxF, -1) - self.detector.avgDrif(idxF)
             print("first", firstPos)
             print("select asteroid on the second image IN THE SAME ORDER than on the first image")
             self.selectOnManuel(lastPos, idxE)
-            lastPos = self.detector.correctStarsFromRotTest(lastPos, idxE, -1) - self.detector.avgDrif(idxE)
+            lastPos = self.detector.correctStarsFromRot(lastPos, idxE, -1) - self.detector.avgDrif(idxE)
             
             
             time1 = self.detector.getImg(idxF).getTime(self.detector.key, self.detector.format)
@@ -262,7 +263,8 @@ class Photometry:
             r, ri, re = self.getAppSize(i)
          
             apertures = np.concatenate((self.detector.getAstPositionAtImg(i), np.asarray(self.stars))) + self.detector.avgDrif(i) + correction
-            apertures = self.detector.correctStarsFromRotTest(apertures, i, 1)#correct drift and rot
+            apertures = self.detector.correctStarsFromRot(apertures, i, 1)#correct drift and rot
+           
             
             if center :
                 ap = Utils.centred(apertures , self.detector.getData(i), r)
@@ -317,7 +319,7 @@ class Photometry:
         if withoutStarPassages:
             data[self.starPassages.T == True] = np.nan
         
-        Utils.binn(binning, data)
+        data = np.asarray(Utils.binn(binning, data))
             
         if inMag:
             print("result ast in Mag")
@@ -637,7 +639,7 @@ class Photometry:
 
         """
         
-        c = 3
+        c = 3.5
         cfwhm = c*self.getFwhm(idx_Img)
         firstPos = self.detector.getAstPositionAtImg(idx_Img)
         
@@ -686,7 +688,7 @@ class Photometry:
         
         p1 = self.findCorner(a, 0)
         p2 = self.findCorner(a, -1)
-        
+
         return [p1[0], p2[0], p2[1], p1[1]]
     
     def isStarsInBox(self, star):
@@ -717,6 +719,7 @@ class Photometry:
         idxF, idxE = self.detector.findBestIdx()
         
         s1 = self.detector.getImg(idxF).findStars(self.detector.getImg(idxF).getTresh() + ofs)
+
         s2 = self.detector.getImg(idxE).findStars(self.detector.getImg(idxE).getTresh() + ofs)
         
         s1 = self.detector.correctStars(s1, idxF)
@@ -836,7 +839,7 @@ class Photometry:
                 for astIdx in range(self.nbOfAst):
                     self.starPassages[astIdx, i] = data.iloc[i, -1-astIdx]
         
-    def toDat(self, path, filename, binning = 1, forma = 'mjd', refS = -1):
+    def toDat(self, path, filename, binning = 1, forma = 'mjd', refS = -1, deg = 4, cStd = 2, displayRmFit = False):
         """
         produce 4 files which corresponds to aperture mesurement in ADU, in Mag, differential photometry and mean
         differential photometry
@@ -848,6 +851,7 @@ class Photometry:
             forma = string (default = 'mjd' for other formats, refer to Time.FORMATS from astropy.time)
         
         """
+        
         
         if binning == -1: # Auto binning
         
@@ -867,88 +871,94 @@ class Photometry:
                 binning = int(nbOfPoint / 240 + 0.5)
                 
             print("binning: ", binning)
+            
+        idxOfExtremPoints = self.idxOfDeletedPoint(refS, binning, d = deg, cStd = cStd, plot = displayRmFit) 
+        print(idxOfExtremPoints)
         
-        if os.path.exists(path + "res_" + filename + '.1'):
-            os.remove(path + "res_" + filename + '.1')
-        if os.path.exists(path + "res_" + filename + '.2'):
-            os.remove(path + "res_" + filename + '.2')
-        if os.path.exists(path + "res_" + filename + '.3'):
-            os.remove(path + "res_" + filename + '.3')
-        if os.path.exists(path + "res_" + filename + '.4'):
-            os.remove(path + "res_" + filename + '.4')
+        asts = self.getAstPhot(binning, False)
+        stars =self.getStarPhot(binning, False)
+        linesByAsts = []
+        
+        for i in range(asts.shape[1]):
+            if os.path.exists(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.1'):
+                os.remove(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.1')
+            if os.path.exists(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.2'):
+                os.remove(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) +'.2')
+            if os.path.exists(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.3'):
+                os.remove(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.3')
+            if os.path.exists(path + "res_" + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) +'.4'):
+                os.remove(path + "res_" + filename + "_ast_" + str(i+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.4')
+            linesByAsts.append([ [], [], [], [] ])
+            
             
         t = Utils.binn(binning, self.extractTime())
-        t = Time(t, format = 'jd', precision = len(str(t[0]).split('.')[-1]))
+        t = Time(t, format = 'jd', precision = 6)
         t = self.timeFormat(t, forma)
         
-        asts = Utils.binn(binning, self.astPhot())
-        stars = Utils.binn(binning, self.starsPhot())
+
         
         if refS == -1:
             refS = np.where(stars[0] == np.max(stars[0]))[0][0]
             print("star ref:", refS + 1)
         
-        lines1 = []
-        lines2 = []
-        lines3 = []
-        lines4 = []
-        
-        
-        for i in range(len(t)):
-            strg1 = str(t[i] + 0.5) + ' '
-            strg2 = strg1
-            strg3 = strg1
-            strg4 = strg1
-            
-            
-            for j in range(asts.shape[1]):
-                
-                if not self.starPassages[j,i]: #delete stars passages 
-                
-                    strg1 += str(asts[i][j]) + ' '
-                    strg2 += str(-2.5*np.log10(asts[i][j])) + ' '
-                    strg3 += str(-2.5*np.log10(asts[i][j]) - -2.5*np.log10(stars[i][refS])) + ' '
-                    strg4 += str(-2.5*np.log10(asts[i][j]) - np.median(-2.5*np.log10(stars[i]))) + ' '
-                
-                else:
+
+    
+        for j in range(asts.shape[1]):
+            for i in range(len(t)):
+                if i not in idxOfExtremPoints[j]:
+                    print(i)
+                    strg1 = str(round(t[i] + 0.5, 6)) + ' '
+                    strg2 = strg1
+                    strg3 = strg1
+                    strg4 = strg1
                     
-                   strg1 += ' ' * (len(str(asts[i][j]))+1)
-                   strg2 += ' ' * (len(str(-2.5*np.log10(asts[i][j])))+1)
-                   strg3 += ' ' * (len( str(-2.5*np.log10(asts[i][j]) - -2.5*np.log10(stars[i][refS])) ) + 1)
-                   strg4 += ' ' * (len(str(-2.5*np.log10(asts[i][j]) - np.median(-2.5*np.log10(stars[i])))) + 1)
+                    #if not self.starPassages[j,i]: #delete stars passages 
+                    if not np.isnan(asts[i][j]): 
+                            
+                         strg1 += str(round(asts[i][j], 4) ) + ' '
+                         strg2 += str(round(-2.5*np.log10(asts[i][j]), 4)) + ' '
+                         strg3 += str(round(-2.5*np.log10(asts[i][j]) - -2.5*np.log10(stars[i][refS]), 4)) + ' '
+                         strg4 += str(round(-2.5*np.log10(asts[i][j]) - np.median(-2.5*np.log10(stars[i])), 4)) + ' '
                    
-                   
-            
-            for j in range(stars.shape[1]):
-                strg1 += str(stars[i][j]) + ' '
-                strg2 += str(-2.5*np.log10(stars[i][j])) + ' '
-                strg3 += str(-2.5*np.log10(stars[i][j]) - -2.5*np.log10(stars[i][refS])) + ' '
+                    # else:
+                    #      print(i, j)
+                    #      strg1 += ' ' * (len(str(round(asts[i][j]+1, 4))))
+                    #      strg2 += ' ' * (len(str(round(-2.5*np.log10(asts[i][j]+1), 4))))
+                    #      strg3 += ' ' * (len(str(round(-2.5*np.log10(asts[i][j]) - -2.5*np.log10(stars[i][refS]) + 1, 4))))
+                    #      strg4 += ' ' * (len(str(round(-2.5*np.log10(asts[i][j]) - np.median(-2.5*np.log10(stars[i])) + 1, 4))))
+                        
+                        
                 
-            strg1 = strg1[:-1] + '\n'
-            strg2 = strg2[:-1] + '\n'
-            strg3 = strg3[:-1] + '\n'
-            strg4 = strg4[:-1] + '\n'
-            
-            lines1.append(strg1)
-            lines2.append(strg2)
-            lines3.append(strg3)
-            lines4.append(strg4)
+                    for k in range(stars.shape[1]):
+                        strg1 += str(round(stars[i][k], 4)) + ' '
+                        strg2 += str(round(-2.5*np.log10(stars[i][k]), 4)) + ' '
+                        strg3 += str(round(-2.5*np.log10(stars[i][k]) - -2.5*np.log10(stars[i][refS]), 4)) + ' '
+                    
+                    strg1 = strg1[:-1] + '\n'
+                    strg2 = strg2[:-1] + '\n'
+                    strg3 = strg3[:-1] + '\n'
+                    strg4 = strg4[:-1] + '\n'  
+                
+                    linesByAsts[j][0].append(strg1)
+                    linesByAsts[j][1].append(strg2)
+                    linesByAsts[j][2].append(strg3)
+                    linesByAsts[j][3].append(strg4)
         
-        with open(path + 'res_' + filename + '.1', 'w') as f:
-            for i in lines1:
-                f.write(i)
+            with open(path + 'res_' + filename + "_ast_" + str(j+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.1', 'w') as f:
+                for i in linesByAsts[j][0]:
+                    f.write(i)
                 
-        with open(path + 'res_' + filename + '.2', 'w') as f:
-            for i in lines2:
-                f.write(i)
+            with open(path + 'res_' + filename + "_ast_" + str(j+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) +'.2', 'w') as f:
+                for i in linesByAsts[j][1]:
+                    f.write(i)
                 
-        with open(path + 'res_' + filename + '.3', 'w') as f:
-            for i in lines3:
-                f.write(i)
+            with open(path + 'res_' + filename + "_ast_" + str(j+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.3', 'w') as f:
+                for i in linesByAsts[j][2]:
+                    f.write(i)
                 
-        with open(path + 'res_' + filename + '.4', 'w') as f:
-            for i in lines4:
-                f.write(i)
+            with open(path + 'res_' + filename + "_ast_" + str(j+1) + '_bin_' + str(binning) + "_refs_" + str(refS+1) + '.4', 'w') as f:
+                for i in linesByAsts[j][3]:
+                    f.write(i)
                 
                 
                 
@@ -1075,44 +1085,18 @@ class Photometry:
                 
         
 if __name__ == '__main__':
-    path2 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\2021-08-06Suh\\21-08-06Suh\\"
-    path = 'C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\2021-08-05Adi\\21-08-05Adi\\'
-    eEye = 'C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/Suh/20-08-11Suh/send/'
-    suh = "C:\\Users\\antoi\\OneDrive\\Documents\PHD\\lightcurve\\entrainement\\21-09-09Suh\\21-09-09Suh\\"
-   
-    suh1 = "C:\\Users\\antoi\\OneDrive\\Documents\PHD\\lightcurve\\entrainement\\Suh\\19-09-12Suh\\2019-09-12\\"
-    res = "C:\\Users\\antoi\\OneDrive\\Documents\PHD\\lightcurve\\entrainement\\Suh\\res/19-09-12Suh.csv"
+  
+    
+    
+    path = 'C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-09-03Suh\\2020-09-03_gordonia/'
+    res = "C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/Suh/res/"
     
 
-    suh4 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-08-11Suh\\send\\" # amelioration ia possible
-    suh5 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-08-12Suh\\send\\" # a revoir avec une amelioration ia
-    suh8 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-09Suh/2020-09-23_gordonia/"#search flat on suh8 first
-    suh8 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-09Suh/2020-09-24_gordonia/"#search flat on suh8 first
-    suh10 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-09-13Suh\\send\\"# double ast to treat
-    suh12 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-10-21Suh\\2020-10-21_gunlod\\"
-    # suh12 = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-10-27Suh\\2020-10-27-gunlod\\"
-    
-    mol = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\22-02-27Mol\\Stereoskopia_2202272024_MAO35\\raw/" #secondary to find
-    adi = "C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\22-04-22Adi\\raw/"
-
-    res = "C:\\Users\\antoi\\OneDrive\\Documents\PHD\\lightcurve\\entrainement\\Suh\\res/"
-    
-    rbt = 'C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/RBT/20-05-26RBT/' 
-    suh = 'C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/Suh/22-03-11Suh/2022-03-11_ninina/'
-    eeye = "C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/eEye/22-05-07eEye/MPC_903_Nealley_20220507/"
-    otivar = "C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/Otivar/21-08-03Otivar/"
-    
-    gy = "C:/Users/antoine/OneDrive/Documents/PHD/lightcurve/2022-07-23/23606_1996_AS1/R/"
-    
-    res = "C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/Otivar/res/"
-    
-    
-    print("ko")
-    seq = glob.glob(eEye + "*za*.f*t*")
+    seq = list(np.asarray(glob.glob(path + "*305*.f*t*")))
     # seq = [seq[0], seq[73],seq[-1]]
-    dark = glob.glob(eEye + "*dark*.f*t*")
-    flat = glob.glob(eEye + "*fla*4*.f*t*")
-    bias = glob.glob(eEye + "*bia*.f*t*")
+    dark = glob.glob(path + "*Dark*.f*t*")
+    flat = glob.glob(path + "*flat*.f*t*")
+    bias = glob.glob(path + "*Bias*.f*t*")
     
     #------------ex photometry---------------
 
@@ -1127,16 +1111,16 @@ if __name__ == '__main__':
         print('FLAT EMPTY')
 
     d = Detector(seq, flatSeq = flat, biasSeq = bias)# , darkSeq = dark
-    
-    d.computeImagesDrift(1000, True)
+
+    d.computeImagesDrift(500, True)
     print('done')
     drift = d.drifts
     
 
-    d.findAsteroid(100, True)
+    d.findAsteroid(500, True)
     
     phot = Photometry(d)
-    phot.start(3, False, starPassageOfs = 200)
+    phot.start(3, False, starPassageOfs = 100)
     
     # ----------------ex occult-----------------
     # path = 'C:\\Users\\antoine\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Adorea\\reduced\\target-c1\\'
