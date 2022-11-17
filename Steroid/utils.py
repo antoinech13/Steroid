@@ -334,7 +334,8 @@ class Utils:
                 avg[:, i] = np.convolve(arr[i, :], np.ones(win), 'valid') / win
             
         return avg
-        
+    
+    
     def stojd(time):
         return time / 86400
         

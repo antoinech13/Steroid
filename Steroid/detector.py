@@ -54,19 +54,21 @@ class Detector(Corrector):
         
         cpt = 0
         N = len(self)
+        
+        
         while len(self.drifts) != cpt:
             element = self.drifts[cpt]
    
-            if len(element) == 0 or np.isnan(self.avgAng(cpt)):
-               
-                if self.starsPosition[cpt] != None:
+            if len(element) == 0 or len(self.angles[cpt]) == 0 or np.isnan(self.avgAng(cpt)):
+                
+                if type(self.starsPosition[cpt]) != type(None):
                    starDetected =  len(self.starsPosition[cpt])
                 else:
                     starDetected = 0
                 
                 
-                print('pop', 'drift:', len(element), 'angle:',self.avgAng(cpt),"nb of stars", starDetected)
-                singleton.appDataDeleted( self.seqManager.getFileName(cpt) + ', drift: ' + str(len(element)) + ', angle: ' + str(self.avgAng(cpt)) +  ", nb of stars " + str(starDetected)  + '\n')
+                print('pop', 'drift:', len(element), 'angle:', len(self.angles[cpt]),"nb of stars", starDetected)
+                singleton.appDataDeleted( self.seqManager.getFileName(cpt) + ', drift: ' + str(len(element)) + ', angle: ' + str( len(self.angles[cpt])) +  ", nb of stars " + str(starDetected)  + '\n')
                 
                 self.pop(cpt)
             else:
@@ -208,9 +210,6 @@ class Detector(Corrector):
             plt.xlabel("images of the sequence")
             plt.ylabel("number of stars detected")
 
-                
-            
-    
         return idxFirst, idxLast
     
     def findAsteroid(self, offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2):
@@ -222,11 +221,11 @@ class Detector(Corrector):
         dr2 = self.avgDrif(idxOfSecond)
 
         stars1 = np.asarray(self.getImg(idxOfFirst).findStars(self.getImg(idxOfFirst).getTresh(treshOnReduced) + offsetTreshAstsDetection, treshOnReduced))  #np.median(self.getData()) + np.std(self.getData())*0.4
-        stars1 = self.correctStarsFromRotTest(stars1, idxOfFirst)
+        stars1 = self.correctStarsFromRot(stars1, idxOfFirst)
         stars1 = stars1 - dr.astype(float)
         stars2 = np.asarray(self.getImg(idxOfSecond).findStars(self.getImg(idxOfFirst).getTresh(treshOnReduced) + offsetTreshAstsDetection, treshOnReduced)) #- dr  #+ np.std(self.getData(idxOfSecond))
         print(stars2)
-        stars2 = self.correctStarsFromRotTest(stars2, idxOfSecond)
+        stars2 = self.correctStarsFromRot(stars2, idxOfSecond)
         stars2 = stars2 - dr2.astype(float)
         print(stars2)
         
@@ -290,10 +289,18 @@ class Detector(Corrector):
         fig,ax = plt.subplots(1)
         ax.imshow(img3, cmap="Greys", vmin = np.mean(img3)*0.5, vmax = np.mean(img3)/0.5)
         
-    def show(self, idx):
+    def show(self, idx, ang = 0, drift = np.zeros(2)):
         img = self.getData(idx)
+        Utils.rotate_image(img, -Utils.rtod(ang))
+        
+        img = np.roll(img, -int(drift[0]+0.5), axis=1)
+        img = np.roll(img, -int(drift[1]+0.5), axis=0)
+        
+        
         fig,ax = plt.subplots(1)
         ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
+        
+        
         
     def add(self, idximg1, idximg2):
         img = (self.getData(idximg1) + self.getData(idximg2))/2

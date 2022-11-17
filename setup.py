@@ -10,16 +10,16 @@ import setuptools
 
 
 setuptools.setup(
-    name='njabjrjfnvkzjkcvndfkdjnvkdsbvjksd',                                # should match the package folder
-    packages=['njabjrjfnvkzjkcvndfkdjnvkdsbvjksd'],                     # should match the package folder
-    version='0.0.13',                                # important for updates
+    name='steroid',                                # should match the package folder
+    packages=['steroid'],                     # should match the package folder
+    version='0.0.01',                                # important for updates
     license='MIT',                                  # should match your chosen license
-    description='Testing installation of Package',
+    description='Package dedicated to asteroid photometry',
     author='Antoine Choukroun',
     author_email='antcho1@amu.edu.pl',
    
     install_requires=['numpy', 'pandas', 'photutils', 'matplotlib', 'astropy', 'opencv-python', 'glob2', 'keras', 'tqdm', 'scipy'],                  # list all packages that your package uses
-    package_data={'njabjrjfnvkzjkcvndfkdjnvkdsbvjksd': ['best_model_alexnet_good3_99.h5']},
+    package_data={'steroid': ['best_model_alexnet_good3_99.h5']},
     include_package_data=True,
     
     keywords=["pypi", "astePhot", "tutorial"], #descriptive meta-data

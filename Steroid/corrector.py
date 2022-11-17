@@ -6,6 +6,7 @@ Created on Mon Mar 21 15:29:08 2022
 """
 
 import numpy as np
+from cmath import rect, phase
 import gc
 
 from tqdm import tqdm
@@ -151,20 +152,25 @@ class Corrector:
     def correctStarsFromRot(self, arrayToCorrect, idx, coefMultAngle = -1):
         
         angle = coefMultAngle*self.avgAng(idx)
-        
         if np.isnan(angle):
             return
         
-        center = self.getImgCenter(idx)
+        arrayToCorrect = np.asarray(arrayToCorrect)
+
+        if arrayToCorrect.shape[0] == 0:
+            return arrayToCorrect
         
+        center = np.flip(self.getImgCenter(idx))
+ 
         stars = arrayToCorrect - center
         rot = np.asarray([[np.cos(angle), -np.sin(angle)],[np.sin(angle), np.cos(angle)]])
+     
         return np.dot(stars, rot) + center
      
     def correctStarsFromRotTest(self, arrayToCorrect, idx, coefMultAngle = -1):
         
         arrayToCorrect = np.asarray(arrayToCorrect)
-        
+        print("before", arrayToCorrect[0])
         if arrayToCorrect.shape[0] == 0:
             return arrayToCorrect
         
@@ -180,6 +186,7 @@ class Corrector:
         beta = np.sin(angle)
         
         rot = np.asarray([[alpha, beta, (1-alpha)*center[0] - beta*center[1]],[-beta, alpha, beta * center[0] + (1 - alpha)*center[1]]])
+        print("after", np.dot(rot, newArry.T).T[0])
         
         return np.dot(rot, newArry.T).T
     
@@ -190,13 +197,13 @@ class Corrector:
         if arrayToCorrect.shape[0] == 0:
             return arrayToCorrect
         
-        return self.correctStarsFromRotTest(arrayToCorrect, idx, coefMultAngle) + coefMultAngle*self.avgDrif(idx)
+        return self.correctStarsFromRot(arrayToCorrect+ coefMultAngle*self.avgDrif(idx), idx, coefMultAngle) 
     
       
         
     def correctPaternFromRot(self, paterns, idx):
         for p in paterns:
-            p.correctRot(-self.avgAng(idx), self.getImgCenter(idx))
+            p.correctRot(-self.avgAng(idx), np.flip(self.getImgCenter(idx)))
         
     def imagesDrift(self, offsetTreshStarsDetection = 0, treshOnReduced = False):
         self.detectStars(offsetTreshStarsDetection, treshOnReduced)
@@ -214,13 +221,11 @@ class Corrector:
             
             a = self.computeAngles(self.paterns[0], p1)
             self.angles.append(np.asarray(a))
-        
-            self.starsPosition[i] = self.correctStarsFromRotTest(self.starsPosition[i], i)
-
- 
-            self.correctPaternFromRot(p1, i)
-
             
+            if len(self.angles[-1]) != 0:
+                self.starsPosition[i] = self.correctStarsFromRot(self.starsPosition[i], i)
+                self.correctPaternFromRot(p1, i)
+        
             d = self.computeDrift(p1, self.paterns[0])
             self.drifts.append(d)
       
@@ -243,7 +248,8 @@ class Corrector:
         return np.nanmedian(self.angles[idx][np.logical_not(np.isnan(self.angles[idx]))])
     
     def avgAng(self, idx):
-        return np.nanmean(self.angles[idx][np.logical_not(np.isnan(self.angles[idx]))])
+        angs = self.angles[idx][np.logical_not(np.isnan(self.angles[idx]))]
+        return phase(sum(rect(1, d) for d in angs)/len(angs))
     
     def correctedImg(self, idx = 0, HDU_idx = 0):
         """
