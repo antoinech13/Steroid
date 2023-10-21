@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 from utils import *
 from data_structurs import *
-
+from singleton import Singleton
 
 class Corrector:
     def __init__(self, seqManager, flatSeq = None, biasSeq = None, darkSeq = None, exposurKey = None):
@@ -35,7 +35,7 @@ class Corrector:
         self.biasMaster = SeqManager(biasSeq).getAvg()
         self.darkMaster = SeqManager(darkSeq).getAvg(biasM=self.biasMaster)
         self.flatMaster = SeqManager(flatSeq).getAvg(1, biasM=self.biasMaster)
-        print(self.flatMaster)
+       
         
         self.seqManager.setBiasDarkFlat(self.biasMaster, self.darkMaster, self.flatMaster, self.darkExp, self.exposurKey)
         
@@ -214,7 +214,7 @@ class Corrector:
         print("start partn comparaison")
     
         for i, p1 in enumerate(tqdm(self.paterns)): # iterate along images
-            if i == 0:
+            if i == 0: # the first frame is the reference. should evolve in the future
                 continue
             
             
@@ -305,3 +305,33 @@ class Corrector:
             imgs = imgs + self.correctedImg(i)
         
         return imgs / len(self)
+    
+    def rejectBadData(self):
+        """
+        reject bad data. (if they are no drift value or angle which was found
+        """
+        singleton = Singleton()
+        
+        cpt = 0
+        N = len(self)
+        
+        
+        while len(self.drifts) != cpt:
+            element = self.drifts[cpt]
+   
+            if len(element) == 0 or len(self.angles[cpt]) == 0 or np.isnan(self.avgAng(cpt)):
+                
+                if type(self.starsPosition[cpt]) != type(None):
+                   starDetected =  len(self.starsPosition[cpt])
+                else:
+                    starDetected = 0
+                
+                
+                print('pop', 'drift:', len(element), 'angle:', len(self.angles[cpt]),"nb of stars", starDetected)
+                singleton.appDataDeleted( self.seqManager.getFileName(cpt) + ', drift: ' + str(len(element)) + ', angle: ' + str( len(self.angles[cpt])) +  ", nb of stars " + str(starDetected)  + '\n')
+                
+                self.pop(cpt)
+            else:
+                cpt+=1
+                
+        print(N - cpt, "data rejected")

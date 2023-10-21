@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from corrector import *
-from data_structurs import SeqManager, Appertur, TimeStruct
+from data_structurs import SeqManager, Appertures, TimeStruct
 
 from astropy.time import Time
 
@@ -25,7 +25,7 @@ class Occult(Corrector):
             self.key =  self.key.split("|")[0].replace(' ', '')
         
         
-        self.apperturs = []
+        self.appertures = []
         self.refStars = []
         self.objectOfInterst = []
         self.results = []
@@ -78,10 +78,10 @@ class Occult(Corrector):
             
             
             stars = np.concatenate((self.refStars, self.objectOfInterst))
-            self.apperturs.append(Appertur(stars, r = r, ri = ri, re = re))
-            self.results.append(self.apperturs[-1].Photom(self.getImg(i), self.key, self.format))
+            self.appertures.append(Appertures(stars, r = r, ri = ri, re = re))
+            self.results.append(self.appertures[-1].Photom(self.getImg(i), self.key, self.format))
             
-            print("image: ", i, '\n', self.apperturs[-1].Photom(img, self.key, self.format))
+            print("image: ", i, '\n', self.appertures[-1].Photom(img, self.key, self.format))
     
     def driftByCenter(self, newPos):
         newPos = np.array(newPos)

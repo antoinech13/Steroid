@@ -39,3 +39,5 @@ class Singleton(metaclass = SingletonMeta):
     def clear(self):
         self.clearDataDeleted()
         self.clearDataStarsPassages()
+        
+        

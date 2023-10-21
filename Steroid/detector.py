@@ -46,36 +46,6 @@ class Detector(Corrector):
         return len(self.seqManager)
 
     
-    def rejectBadData(self):
-        """
-        reject bad data. (if they are no drift value or angle which was found
-        """
-        singleton = Singleton()
-        
-        cpt = 0
-        N = len(self)
-        
-        
-        while len(self.drifts) != cpt:
-            element = self.drifts[cpt]
-   
-            if len(element) == 0 or len(self.angles[cpt]) == 0 or np.isnan(self.avgAng(cpt)):
-                
-                if type(self.starsPosition[cpt]) != type(None):
-                   starDetected =  len(self.starsPosition[cpt])
-                else:
-                    starDetected = 0
-                
-                
-                print('pop', 'drift:', len(element), 'angle:', len(self.angles[cpt]),"nb of stars", starDetected)
-                singleton.appDataDeleted( self.seqManager.getFileName(cpt) + ', drift: ' + str(len(element)) + ', angle: ' + str( len(self.angles[cpt])) +  ", nb of stars " + str(starDetected)  + '\n')
-                
-                self.pop(cpt)
-            else:
-                cpt+=1
-                
-        print(N - cpt, "data rejected")
-    
     def computeImagesDrift(self, offsetTreshStarsDetection = 0, treshOnReduced = False):
         """
         
@@ -88,10 +58,6 @@ class Detector(Corrector):
         treshOnReduced : bool, optional 
             choose if tresholing should be done on reduced frame.
             
-
-        Returns
-        -------
-        None.
 
         """
         
@@ -346,7 +312,7 @@ class Detector(Corrector):
         img = Utils.rotate_image(self.getData(idx), -Utils.rtod(self.avgAng(idx)))
         fig,ax = plt.subplots(1)
         for i in stars:
-            c = Circle(i, radius = 10, fill=False)
+            c = Circle(i, radius = 20, fill=False)
             ax.add_patch(c)
         ax.imshow(img, cmap="Greys", vmin = np.mean(img[img>0])*0.5, vmax = np.mean(img[img>0])/0.5)
         

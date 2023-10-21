@@ -36,7 +36,7 @@ from utils import *
 from exceptions import *
 from detector import Detector
 from occultation import *
-from data_structurs import Appertur
+from data_structurs import Appertures
 from singleton import Singleton
 
 from astropy.time import Time
@@ -199,7 +199,27 @@ class Photometry:
         
         return r, ri, re
         
-    def start(self, nbOfStars, center = True, maxVal = 30000, starPassageOfs = 300):
+    
+    def startByTracking(self, r, ri, re, eps = 10):
+        print('select stars:')
+        self.selectOnManuel(self.stars)
+        print('select asteroid:')
+        firstPos = []
+
+
+        self.selectOnManuel(firstPos, 0)
+        
+        for i in range(len(self.detector)):
+            img = self.detector.getData(i)
+            s = Utils.centred(firstPos+ self.stars , img, eps)
+            
+            
+            self.Appertur.append(Appertur(s, len(firstPos), r, ri, re))
+            self.results.append(self.Appertur[-1].Photom(self.detector.getImg(i), self.detector.key, self.detector.format, self.detector.isTimeCentred, self.detector.seqManager.getExpo(i, self.detector.exposurKey)))
+            
+            print("image: ", i, '\n', self.Appertur[-1].Photom(self.detector.getImg(i), self.detector.key, self.detector.format), '\n', type(self.Appertur[-1].Photom(self.detector.getImg(i), self.detector.key, self.detector.format)))
+        
+    def start(self, nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000):
         
         self.resetLists()
         self.singleton.clearDataStarsPassages()
@@ -279,16 +299,16 @@ class Photometry:
            
             for ast in range(self.nbOfAst):
                 for star in starPassagesCorrection:
-                    if Utils.dist(star, ap[ast, :]) < 3*self.getFwhm(i):
+                    if Utils.dist(star, ap[ast, :]) < 1*self.getFwhm(i):
                         self.singleton.appDataStarsPassages(self.detector.seqManager.getFileName(i) + '\n')
                         self.starPassages[ast, i] = True
                         break
             
-            self.Appertur.append(Appertur(ap, len(self.detector.asteroidsPositionFirstImage), r, ri, re))
-            self.results.append(self.Appertur[-1].Photom(self.detector.getImg(i), self.detector.key, self.detector.format, self.detector.isTimeCentred, self.detector.seqManager.getExpo(i, self.detector.exposurKey)))
+            self.Appertur.append(Appertures(ap, len(self.detector.asteroidsPositionFirstImage), r, ri, re))
+            self.results.append(self.Appertur[-1].photom(self.detector.getImg(i), self.detector.key, self.detector.format, self.detector.isTimeCentred, self.detector.seqManager.getExpo(i, self.detector.exposurKey)))
             
             
-            print("image: ", i, '\n', self.Appertur[-1].Photom(self.detector.getImg(i), self.detector.key, self.detector.format), '\n', type(self.Appertur[-1].Photom(self.detector.getImg(i), self.detector.key, self.detector.format)))
+            print("image: ", i, '\n', self.Appertur[-1].photom(self.detector.getImg(i), self.detector.key, self.detector.format), '\n', type(self.Appertur[-1].photom(self.detector.getImg(i), self.detector.key, self.detector.format)))
             
 
             
@@ -714,7 +734,7 @@ class Photometry:
     def sisa(self, s, ast, eps = 1.5):
         return s[0] < ast[0] + eps and s[0] > ast[0] - eps and s[1] < ast[1] + eps and s[1] > ast[1] - eps
                
-    def StarPassages(self, ofs = 300):
+    def StarPassages(self, ofs = 15000):
         
         idxF, idxE = self.detector.findBestIdx()
         
@@ -752,7 +772,6 @@ class Photometry:
         
         snapshots = [ self.detector.getReducedData(i) for i in range(len(self.detector)) ]
 
-        # First set up the figure, the axis, and the plot element we want to animate
         fig,ax = plt.subplots(1)
 
         a = snapshots[0]
@@ -763,7 +782,6 @@ class Photometry:
         
         def animate_func(i):
             ax.clear()
-            # im.set_array(snapshots[i])
             im = ax.imshow(snapshots[i], interpolation='none', cmap='Greys', vmin = np.median(snapshots[i][snapshots[i]>0])*0.5, vmax = np.median(snapshots[i][snapshots[i]>0]) / 0.5)
             
             if len(self.Appertur) == 0:
@@ -1088,15 +1106,15 @@ if __name__ == '__main__':
   
     
     
-    path = 'C:\\Users\\antoi\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Suh\\20-09-03Suh\\2020-09-03_gordonia/'
-    res = "C:/Users/antoi/OneDrive/Documents/PHD/lightcurve/entrainement/Suh/res/"
+    path = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\arg\19-10-23Arg/"
+    res = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\arg\res/19-10-23Arg/"
     
 
-    seq = list(np.asarray(glob.glob(path + "*305*.f*t*")))
+    seq = list(np.asarray(glob.glob(path + "adelaide/"+ "*.f*t*")))
     # seq = [seq[0], seq[73],seq[-1]]
-    dark = glob.glob(path + "*Dark*.f*t*")
-    flat = glob.glob(path + "*flat*.f*t*")
-    bias = glob.glob(path + "*Bias*.f*t*")
+    dark = glob.glob(path + "dark/"+ "*Dark*.f*t*")
+    flat = glob.glob(path + "flat/"+ "*flat*r*.f*t*")
+    bias = glob.glob(path + "bias/"+ "*bias*.f*t*")
     
     #------------ex photometry---------------
 
@@ -1110,17 +1128,17 @@ if __name__ == '__main__':
         flat = None
         print('FLAT EMPTY')
 
-    d = Detector(seq, flatSeq = flat, biasSeq = bias)# , darkSeq = dark
+    d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
 
-    d.computeImagesDrift(500, True)
+    d.computeImagesDrift(0, True)
     print('done')
     drift = d.drifts
     
 
-    d.findAsteroid(500, True)
+    d.findAsteroid(1000, True)
     
     phot = Photometry(d)
-    phot.start(3, False, starPassageOfs = 100)
+    phot.start(3, True, starPassageOfs = 1000)
     
     # ----------------ex occult-----------------
     # path = 'C:\\Users\\antoine\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Adorea\\reduced\\target-c1\\'

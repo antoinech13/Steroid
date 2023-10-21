@@ -26,6 +26,7 @@ class Star:
     def __add__(self, other):
         if isinstance(other, Star):
             return Star(self.s + other.s)
+        
         return Star(self.s + other)
     
     def __sub__(self, other):
@@ -231,6 +232,7 @@ class SeqManager:
             raise EmptyListError("The sequence list is empty")
         
         self.seq = seq
+
         
         self.darkM = 0
         self.biasM = 0
@@ -353,7 +355,7 @@ class SeqManager:
         
         
 
-class Appertur:
+class Appertures:
     def __init__(self, positions, idxOfStars = None, r = 3, ri = 6, re = 8):
         self.positions = positions
         self.idxOfStars = idxOfStars
@@ -366,7 +368,7 @@ class Appertur:
     def __str__(self):
         return "appertur pos: " + self.positions + " idx: " + self.idxOfStars
     
-    def Photom(self, img, key, forma, center = False, exposure = None):
+    def photom(self, img, key, forma, center = False, exposure = None):
         '''
 
         Parameters
@@ -489,11 +491,11 @@ class Fit():
             y,x = self.histogram()
         
         
-        x = x[1:-1]
+        x = x[1:-100]
         y = np.log10(y)
         y[np.isneginf(y)] = 0
-        maxx = np.max(y)
-        idxOfMax = np.where(y == maxx)[0][0]
+        maxx = np.max(y[5:])
+        idxOfMax = np.where(y[5:] == maxx)[0][0]
         
         
         #-----------first step: compute the gaussian----------
@@ -501,8 +503,12 @@ class Fit():
         
         startingPoint = [maxx, x[idxOfMax], 1]
         
+        # def func(x, a, x0, sigma):
+        #     return a*np.exp(-(x-x0)**2/(2*sigma**2))
         def func(x, a, x0, sigma):
-            return a*np.exp(-(x-x0)**2/(2*sigma**2))
+            r = np.log10(a*np.exp(-(x-x0)**2/(2*sigma**2)))
+            r[r<0] = 0
+            return r
         
         popt, pcov = curve_fit(func, x[:idxOfMax*2+2], yGauss, p0 = startingPoint)
         
@@ -513,8 +519,11 @@ class Fit():
             x1 = x[:idxOfMax]
             x2 = x[idxOfMax:]
             
-            comp1 = popt[0]*np.exp(-(x1-popt[1])**2/(2*popt[2]**2))
-            comp2 = popt[0]*np.exp(-(x2-popt[1])**2/(2*popt[2]**2))
+            comp1 = np.log10(popt[0]*np.exp(-(x1-popt[1])**2/(2*popt[2]**2)))
+            comp2 = np.log10(popt[0]*np.exp(-(x2-popt[1])**2/(2*popt[2]**2)))
+            comp1[comp1 < 0] = 0
+            comp2[comp2 < 0] = 0
+            
             comp3 = linear(x2, a, b)
             
             comp4 = comp2
@@ -529,17 +538,17 @@ class Fit():
         def func2(x, a, b):
             return combineModel(x, a, b)[0]
         
-        popt2, pcov2 = curve_fit(func2, x, y[1:])
+        popt2, pcov2 = curve_fit(func2, x, y[1:-99])
         yn, flag = combineModel(x, *popt2)
         
-        residu = (y[1:] - yn)[:-10000]
+        residu = (y[1:-99] - yn)[:-10000]
         
         if display:
             print("gaussian fit a, x0, sigma:", popt )
             print("linear fit a, b:", popt2)  
             print("tresh:",  x[idxOfMax + np.argmax(flag)])
             plt.figure()
-            plt.plot(x, y[1:], label = 'hist')
+            plt.plot(x, y[1:-99], label = 'hist')
             plt.plot(x, yn, label = 'fit')
             plt.legend()
             plt.show()
@@ -557,6 +566,9 @@ class Fit():
             image = self.getReducedData().astype(np.uint16)
         else:
             image = self.getData().astype(np.uint16)
+       
+       
+        image[image> 2**16 -1] = 0
        
         if tresh == None:
             tresh =  1.5*np.median(image)
