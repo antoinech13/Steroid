@@ -205,7 +205,7 @@ class Corrector:
         for p in paterns:
             p.correctRot(-self.avgAng(idx), np.flip(self.getImgCenter(idx)))
         
-    def imagesDrift(self, offsetTreshStarsDetection = 0, treshOnReduced = False):
+    def imagesCorrection(self, offsetTreshStarsDetection = 0, treshOnReduced = False):
         self.detectStars(offsetTreshStarsDetection, treshOnReduced)
         print("stars detection done")
         print("begin to build patern")
@@ -335,3 +335,47 @@ class Corrector:
                 cpt+=1
                 
         print(N - cpt, "data rejected")
+        
+        
+    def imshowstar(self, idx = 0):
+            
+        stars = self.starsPosition[idx]
+        img = Utils.rotate_image(self.getData(idx), -Utils.rtod(self.avgAng(idx)))
+        fig,ax = plt.subplots(1)
+        for i in stars:
+            c = Circle(i, radius = 20, fill=False)
+            ax.add_patch(c)
+        ax.imshow(img, cmap="Greys", vmin = np.mean(img[img>0])*0.5, vmax = np.mean(img[img>0])/0.5)
+        
+    def checkPaterns(self, idxOfImage = 0, patidx = None):
+        def patToArw(pat):
+            s1 = pat.t1.s1
+            s2 = pat.t1.s2
+            s3 = pat.t1.s3
+            s4 = pat.t2.s3
+            s5 = pat.t3.s3
+            
+            d2 = s2 - s1
+            d3 = s3 - s1
+            d4 = s4 - s1
+            d5 = s5 - s1
+            
+            c = [random.random(), random.random(), random.random()]
+            a2 = Arrow(s1[0], s1[1], d2[0], d2[1], color=c)
+            a3 = Arrow(s1[0], s1[1], d3[0], d3[1], color=c)
+            a4 = Arrow(s1[0], s1[1], d4[0], d4[1], color=c)
+            a5 = Arrow(s1[0], s1[1], d5[0], d5[1], color=c)
+            
+            return a2, a3, a4, a5
+        
+        fig,ax = plt.subplots(1)
+        for i, pat in enumerate(self.paterns[idxOfImage]):
+            if patidx == None or i == patidx:
+                a1, a2, a3, a4 = patToArw(pat)
+                ax.add_patch(a1)
+                ax.add_patch(a2)
+                ax.add_patch(a3)
+                ax.add_patch(a4)
+            
+        img = Utils.rotate_image(self.getData(idxOfImage), -Utils.rtod(self.avgAng(idxOfImage)))
+        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)

@@ -1129,8 +1129,8 @@ if __name__ == '__main__':
         print('FLAT EMPTY')
 
     d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
-
-    d.computeImagesDrift(0, True)
+  
+    d.computeImagesCorrection(0, True)
     print('done')
     drift = d.drifts
     
