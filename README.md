@@ -129,7 +129,18 @@ Steroid is a python package dedicated to help users to developpe their own autom
   ***rejectBadData():***
 
   - description: reject all data where drift and/or angle was not found
-    
+
+ ***imshowstar(idx = 0):***
+
+ -  description: method to display image at idx and show objects detected
+ -  input: (INT) idx of the image in the sequence
+ 
+***checkPatterns(idxOfImage = 0, patidx = None):***
+
+-  description: method to display image idx and, if patterns idx (patidx) set to None, will show all patterns. If patterns idx set to a value, will only show the pattern selected
+-  input: (INT) idxOfImage image idex in the sequence. (INT) patidx index of the patterns of all patterns of the image. If set to None, will show all patterns
+
+
 ### Detector
 
 **Description:**
