@@ -196,4 +196,186 @@ This class is dedicated to detect moving object. it's internaly stor a list of m
   - input: (INT) idex of the image where to get positions
   - return: (numpy.array) array of speed on x and y axis of moving objects
 
-                                                           
+
+## Data structure description:
+
+this section is dedicated to talk about some classes store in the file data_structurs. 
+
+### Triangle
+
+**Description:**
+
+This class store 3 stars and represent a triangle. this class overload the addition, substraction, division, multiplication, comparaison et also \_\_str\_\_
+
+**Constructor:**
+
+***Triangle(s1, s2, s3, eps = 2):***
+
+s1, s2 and s2 are (numpy.array). eps is a tolerence used in the \_\_eq\_\_ to estimate if two triangles are equal or not
+
+
+**Methods:**
+
+***d1():***
+
+-  description: return the eucledian distance between s1 and s2
+-  return: (FLOAT) distance between s1 and s2
+
+***d2():***
+
+-  description: return the eucledian distance between s1 and s3
+-  return: (FLOAT) distance between s1 and s3
+
+  
+***d3():***
+
+-  description: return the eucledian distance between s2 and s3
+-  return: (FLOAT) distance between s2 and s3
+
+***buildVect():***
+
+- desciption: build tree vector v1, v2 and v3 between (s1, s2) , (s1, s3) and (s2, s3)
+- return (numpy.array, numpy.array, numpy.array) three vector v1, v2 and v3
+
+***getRotationAngle(other):***
+
+-  description: compute the angle between the triangle and an other one. Cauntion!!! this method do not check if both triangles are the same
+-  input: (Triangle) an other triangle
+-  return: (FLOAT) the angle of rotation between both tirangles
+
+
+***computeDistance(other):***
+
+-  description: return the mean distance between the triangle and an other
+-  input: (Triangle) and othee triangle
+-  return: (numpy.array) mean distance in x and y of both triangles
+
+***correctRot(angle, center):***
+
+- description: rotate the position of s1, s2 and s3 of an angle according to a center of rotation
+- input: (FLOAT) angle of rotation, (numpy.array) position of the center of rotation
+
+
+### Pattern:
+
+
+**Desciption:**
+
+this class store Triangles as a pattern. the addition, substraction, multiplication, division, comparaison and \_\_str\_\_ are overloaded
+
+**Constructor**
+
+***Pattern(t1, t2, t3, t4, t5):***
+
+t1, t2, t3, t4 and t5 are Triangle object (see the datastructure class *Triangle*)
+
+**Methods:**
+
+***computeDistance(other):***
+
+-  description: compute the mean distance between two Pattern
+-  input: (Pattern) an other pattern to compute distance
+-  return: (numpy.array) mean distance in x and y between the two pattern
+
+***computeAngle(other):***
+
+- description: compute the angle of rotation between two patterns
+- input: (Pattern) and other pattern
+- return: (FLOAT) angle of rotation between the two pattern
+
+
+***correctRot(angle, center):***
+
+-  description: rotate t1, t2, t3, t4 and t5 of an angle according to a center of rotation
+-  input: (FLOAT) angle of rotation, (numpy.array) position of the center of rotation
+
+### SeqManager:
+
+**Description:**
+
+this class store list of images path from a same sequence
+
+**Constructor:**
+
+***SeqManager(seq):"""
+
+seq is just a list of path of raw images (STRING)
+
+**Methods:**
+
+***getPath(idx):***
+
+-  description: return the path of the image at idx
+-  input: (INT) idx of the image of interest in the sequence
+-  return: (STRING) return the path of the image
+
+***getFileName(idx):***
+
+-  description: return the name of the image at idx
+-  input: (INT) the idx of the image of interest in the sequence
+-  return: (STRING) the name of the image
+
+***getImg(idx = 0):***
+
+-  description: return on object *Fit* of the image at idx
+-  input: (INT) idx of the image of interest
+-  return: (Fit) a data structure of type Fit
+
+***getHDU(idx = 0, HDU = 0):***
+
+-  description: return the HDU of the image idx
+-  input: (INT) idx of the image. (INT) HDU index
+-  return (astropy.io.fits.hdu.image.PrimaryHDU) HDU of the image idx
+
+***getInfo(idx = 0):***
+
+- description: display info of the image at idx
+- input: (INT) idx of the image of interest
+
+***getHeader(idx = 0, HDU = 0):***
+
+-  description: retunr the header at the HDU and at the image idx
+-  input: (INT) idx of image, (INT) index of the HDU of the image at idx
+-  return: (astropy.io.fits.header.Header) header of the image idx at the hdu
+
+***getExpo(idx, key, HDU = 0):***
+
+-  description: return the exposure from the header of the image at idx and hdu. the exposure is determine according to the key
+-  input: (INT) idx of the image of interest, (STRING) key in the header corresponding to the exposure, (INT) hdu index
+-  return: (FLOAT) exposure
+
+***getData(idx = 0, idx_HDU = 0):***
+
+-  description: return the image idx and idx of hdu as array
+-  input: (INT) index of the image of interest, (INT) idex of HDU
+-  return: (numpy.array) the image
+
+***getCenter(idx_img = 0, idx_HDU = 0):***
+
+-  description: return the center of an image at idx and of HDU
+-  input: (INT) image idex, (INT) image HDU
+-  return: (numpy.array) coordinate of the center of the image at idx and at hdu
+
+***getImgShape(idx = 0, idx_HDU = 0):***
+
+-  description: return the shape of the image at idx and at hdu
+-  intput: (INT) index of the image of interest. (INT) HDU index
+-  return: (TUPLE) image shape
+
+***getTime(key, forma, idx = 0, HDU = 0):***
+
+-  description: get the time of the image at idx and hdu from the header using the key and forma. if in the header, the time is store as julian day, (exemple: JD=2458780) then key = JD and forma=JD. For more format, refere to Time.FORMATS from astropy.time
+-  input: (STRING) key of the time in the header, (STRING) format of the time in the header (refere to Time.FORMATS from astropy.time), (INT) idx of the image, (INT) idx of HDU
+-  return: (astropy.time.core.Time) time of the image
+
+***pop(idx = -1):***
+
+-  description: delete an image at the position idx from the sequence. by default idx is set to -1 so the last image is delete
+-  input: (INT) idx of image to delete
+
+***histogram(idx = 0, idx_HDU = 0):***
+
+-  description: return the histogram of the image idx and hdu at idx_hdu
+-  input: (INT) index of the image of interest, (INT) idx of the HDU
+-  return: (numpy.array) histogram, (numpy.array) bin edgesarray (see numpy.histogram) 
+
