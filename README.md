@@ -8,11 +8,19 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
   ## Code Structur
 
+
   ## Classes Description
 
   in this section, we will details all classes of the code and we will details some methods that could be usefull for users
 
-  ### Corrector
+  <details>
+
+  <summary> 
+    
+  ### Corrector 
+  
+  </summary>
+  
 
   **Description:**
 
@@ -140,8 +148,17 @@ Steroid is a python package dedicated to help users to developpe their own autom
 -  description: method to display image idx and, if patterns idx (patidx) set to None, will show all patterns. If patterns idx set to a value, will only show the pattern selected
 -  input: (INT) idxOfImage image idex in the sequence. (INT) patidx index of the patterns of all patterns of the image. If set to None, will show all patterns
 
+ </details id="detector">
 
-### Detector
+  <details>
+
+  <summary> 
+    
+  ### Detector 
+  
+  </summary>
+ 
+
 
 **Description:**
 
@@ -197,11 +214,21 @@ This class is dedicated to detect moving object. it's internaly stor a list of m
   - return: (numpy.array) array of speed on x and y axis of moving objects
 
 
+</details>
+
 ## Data structure description:
 
 this section is dedicated to talk about some classes store in the file data_structurs. 
 
-### Triangle
+<details>
+
+  <summary> 
+    
+  ### Triangle
+  
+  </summary>
+
+
 
 **Description:**
 
@@ -255,8 +282,16 @@ s1, s2 and s2 are (numpy.array). eps is a tolerence used in the \_\_eq\_\_ to es
 - description: rotate the position of s1, s2 and s3 of an angle according to a center of rotation
 - input: (FLOAT) angle of rotation, (numpy.array) position of the center of rotation
 
+</details>
 
-### Pattern:
+<details>
+
+  <summary> 
+    
+  ### Pattern:
+  
+  </summary>
+
 
 
 **Desciption:**
@@ -289,7 +324,17 @@ t1, t2, t3, t4 and t5 are Triangle object (see the datastructure class *Triangle
 -  description: rotate t1, t2, t3, t4 and t5 of an angle according to a center of rotation
 -  input: (FLOAT) angle of rotation, (numpy.array) position of the center of rotation
 
-### SeqManager:
+</details>
+
+<details>
+
+  <summary> 
+    
+  ### SeqManager:
+  
+  </summary>
+
+
 
 **Description:**
 
@@ -379,6 +424,8 @@ seq is just a list of path of raw images (STRING)
 -  input: (INT) index of the image of interest, (INT) idx of the HDU
 -  return: (numpy.array) histogram, (numpy.array) bin edgesarray (see numpy.histogram) 
 
+</details>
+
 ## Photometry:
 
 
@@ -386,7 +433,15 @@ seq is just a list of path of raw images (STRING)
 
 In the context of our studies on asteroids from the main belt, we have used the various functions of Steroid to design our own photometric software capable of automatic or semi-automatic processing. With this new tool, we have significantly increased our ability to produce light curves. This software is included in Steroid in the photometry.py file. In this section, we will show how to use it.
 
-### Methods
+
+<details>
+
+  <summary> 
+    
+  ### Methods:
+  
+  </summary>
+
 
 **Constructor:**
 
@@ -447,7 +502,18 @@ Photometry take only one optional paramters of type (Detector). Why optional? be
 - description: load a csv file produced with the method ***toCsv***. can be use to rework plots
 - input: (STRING) path + file name with extention (ex: r"C:/.../myCsv.csv")
 
-### How to use?
+</details>
+
+
+<details>
+
+  <summary> 
+    
+  ### How to use ?
+  
+  </summary>
+
+
 
 
 **First step:**
@@ -579,5 +645,4 @@ phot.start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)
 **Caution:** in case where users use semi-automatic procedures, the selection on images are done with the left click and when selection is finish press the right click.
 
 
-
-That is all what is needed. 
+</details>
