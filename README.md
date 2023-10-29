@@ -379,3 +379,205 @@ seq is just a list of path of raw images (STRING)
 -  input: (INT) index of the image of interest, (INT) idx of the HDU
 -  return: (numpy.array) histogram, (numpy.array) bin edgesarray (see numpy.histogram) 
 
+## Photometry:
+
+
+### Description:
+
+In the context of our studies on asteroids from the main belt, we have used the various functions of Steroid to design our own photometric software capable of automatic or semi-automatic processing. With this new tool, we have significantly increased our ability to produce light curves. This software is included in Steroid in the photometry.py file. In this section, we will show how to use it.
+
+### Methods
+
+**Constructor:**
+
+***Photometry(detector = None)***
+
+Photometry take only one optional paramters of type (Detector). Why optional? because *Photometry* also include some functions to save photometry but also some function to load. Indeed if users want to rework on some lightcurves already processed they don't need to redo all the work. *Photometry* can reload previous lightcurves. In this kind of situation, user don't need any *Detector* as the photometry was already done. He just need to build an empty *Photometry* object and use the method ***readCsv(path)***.
+
+**Methods:**
+
+***start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)***
+
+- description: launch the photometry according to some input parameters
+- input: (INT) number of reference stars (only in case of automatic procedure), (BOOLEAN) center or not appertures of center of brightness, (FLOAT) maximum value that automatic reference stars automaticly selected should not overstep. (FLOAT) the threshold to detect stars in the context of stars passages
+
+***plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False)*** 
+
+- description: Perform plot of differential photometry
+- input: - (INT) refS is the index of the star selected as reference \
+  &emsp;&emsp;&ensp; - (INT) ast is, in the case of multiple asteroids, the index of the asteroid that we want to plot. \
+  &emsp;&emsp;&emsp;&ensp;  If set to -1 all asteroids will be plot  \
+  &emsp;&emsp;&ensp; - (list) yRange range of y axis \
+  &emsp;&emsp;&ensp; - (INT) binning. use to bin lightcurve. automaticly choose if set to -1 \
+  &emsp;&emsp;&ensp; - (BOOLEAN) resc. rescale stars lightcurves close to asteroid's lightcurves \
+  &emsp;&emsp;&ensp; - (STRING) forma. format of the time.  refere to Time.FORMATS from astropy.time \
+  &emsp;&emsp;&ensp; - (array) xticks. new x ticks \
+  &emsp;&emsp;&ensp; - (BOOLEAN) inMag. if True, y axis display in magnitude. if False. Y axis display in instrumental flux. \
+  &emsp;&emsp;&ensp; - (BOOLEAN) rmExtremPoint. if True, will remove extreme points. To remove extrem points, the \
+  &emsp;&emsp;&emsp;&ensp; algorythm will fit a polynome then normalise asteroid's lightcurves with the polynome. \
+  &emsp;&emsp;&emsp;&ensp;  each points out of [median - C x Std, median + C x Std] are removed \
+  &emsp;&emsp;&ensp; - (FLOAT) cStd. this correspond de C. \
+  &emsp;&emsp;&ensp; - (INT) deg. Degree of the polynome. \
+  &emsp;&emsp;&ensp; - (BOOLEAN) displayRmFit. if True, display more plot to monitore rmExtremPoint. \
+  &emsp;&emsp;&ensp; - (BOOLEAN) starPassage. if True, will remove star's passages \
+
+***toDat(path, filename, binning = 1, forma = 'mjd', refS = -1, deg = 4, cStd = 2, displayRmFit = False)***
+
+-  description: write files with extention .1, .2, .3 and .4. for each of them, the first column is the time. for others columns .1 correspond to data in instrumatal flux, .2 correspond to data in magnitude, .3 correspond to differential photometry and .4 correspond to differential photometry with averaged references star.
+- input: (STRING) path correspond to the path where to save those files. (STRING) correspond to the name to give to files. Other parameters are the same than ***plotDif***.
+
+***log(path, name = "log.txt")***
+  
+- description: will write a log file with information on: - data rejected, - star passages data, fwhm detected on each frames...
+- input: (STRING) path to save the log file. (STRING) name give to the log file. do not forget the extention
+
+
+***toGif(path)***
+
+- description: toGif write a .gif image of all frames with appertures.
+- input: (STRING) path + file name with extention (ex: r"C:/.../myGif.gif")
+
+***toCsv(path)***
+
+- description: write a csv file which summery the photometry. It's can be use as a backup with the method ***readCsv*** (see below).
+- input: (STRING) path + file name with extention (ex: r"C:/.../myCsv.csv")
+  
+***readCsv(path)***   
+
+- description: load a csv file produced with the method ***toCsv***. can be use to rework plots
+- input: (STRING) path + file name with extention (ex: r"C:/.../myCsv.csv")
+
+### How to use?
+
+
+**First step:**
+
+The first thing to use photometry is to import it:
+
+    from photometry import Photometry
+
+*Photometry* object constructor take, as an optional parameter, an object *Detector*. 
+
+If the photometry was not yet done, then the users need to provide an object *Detector*. It is therefore important to include it:
+
+    from detector import Detector
+
+
+**Second step:** 
+
+The next step is to build an object *Detector* (constructor is describ in the [Detector](#detector) section). To do this, we will use glob
+
+     import glob
+
+an exemple of a piece of code that can be use to build an object *Detector*:
+
+  ~~~
+
+#-----------set up all list of path for the raw data and bias, dark and flat data--------------
+
+    path = r"C:\...\directory_of_your_data/"
+   
+    seq = glob.glob(path + "*target_repetable_name_pattern*.f*t*") #return a list of path of all file which contain target_repetable_name_pattern in their name
+ 
+    dark = glob.glob(path + "*dark_repetable_name_pattern*.f*t*") #return a list of path of all file which contain dark_repetable_name_pattern in their name
+    flat = glob.glob(path + "*flat_repetable_name_pattern*.f*t*") #return a list of path of all file which contain flat_repetable_name_pattern in their name
+    bias = glob.glob(path + "*bias_repetable_name_pattern*.f*t*") #return a list of path of all file which contain bias_repetable_name_pattern in their name
+
+#-----------------------check if bias, dark and flat data was found-----------------------------
+
+    if len(dark) == 0:        # Check if dark data was found. If not, set up dark variable to the optional default value of Detector attribute darkSeq 
+        dark = None
+        print('DARK EMPTY')
+    if len(bias) == 0:        # Check if bias data was found. If not, set up dark variable to the optional default value of Detector attribute biasSeq 
+        bias = None
+        print('BIAS EMPTY')
+    if len(flat) == 0:        # Check if flat data was found. If not, set up dark variable to the optional default value of Detector attribute flatSeq 
+        flat = None
+        print('FLAT EMPTY')
+
+#-------------------construct Detector object----------------------------------------------------
+
+    d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
+  ~~~
+
+**Third step:**
+
+The next step is to launch *Detector* methods to correct images and to detect asteroids:
+
+    d.computeImagesDrift(offsetTreshStarsDetection = 0, treshOnReduced = False)
+    d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
+
+***computeImagesDrift*** could me internally called in ***findAsteroid*** but we choose to let it like this to give more flexibility to users. Indeed, In this process, ***computeImagesDrift*** will take more time has it has to detect stars from all images of the sequence. Also it's the proccesse the less sensitive to the detection treshold. Indeed, it's only need 5 common stars on each frames to be able to correct images. According to this, users can earn time of execution setting up a high value of **offsetTreshStarsDetection**. For the same reason, **treshOnReduced** can be set to False.  
+
+On the other hand, ***findAsteroid*** is really sensityve to the data quality and to the treshold. More close to the optimal value the treshold will be and better the algorythm will perform. Therefor **offsetTreshStarsDetection** should be small for small adjustement and **treshOnReduced** should be set to True.
+
+**Fourth step**
+
+The final step is to build an object *Photometry* and to launch the photometric processe.
+
+    phot = Photometry(d)
+    phot.start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)
+
+**nbOfStars** is mandatory for now but it's only used in the case that you choose automatic reference stars selection. It's the number of reference stars that the code will search. 
+
+**center** is a boolean and is a paramter to allow the code to center appertures on the "center of intensity" (in reference to the center of masse equation where the masse was changed by the intensity of pixels) or not. To be clear, apperture position will all time be set according to the initial positions, to the image drift and angle of rotation and for moving object, to the speed. But, if center is set to true, after placing all appertures, the code will simply perform a centring. In case of starpassages, the apperture will probably stay fixe on the stars the time that the astroid will pass in front but after, it will come back centred on the asteroid when the star will leave the apperture feild. Moreover, with the algorythm set up to delete stars passages, all the time where the apperture will stay focuse on the star will not be present on the final lightcurve.
+
+**maxVal** correspond to the maximum value that reference stars automaticly select should not overstep.
+
+**starPassageOfs** have the same function as **treshOnReduced** for objects and methodes dedicated to detect objects. This one is dedicated to stars Passages detection. It's, by default, set to 15000, which detect only bright stars but can be set much lower to detect fainter stars.
+
+
+
+**Conclusion**
+
+The final code should look like this:
+
+ ~~~
+
+from photometry import Photometry
+from detector import Detector
+
+import glob
+
+#-----------Set up all list of path for the raw data and bias, dark and flat data--------------
+
+path = r"C:\...\directory_of_your_data/"
+   
+seq = glob.glob(path + "*target_repetable_name_pattern*.f*t*") 
+
+dark = glob.glob(path + "*dark_repetable_name_pattern*.f*t*") 
+flat = glob.glob(path + "*flat_repetable_name_pattern*.f*t*")
+bias = glob.glob(path + "*bias_repetable_name_pattern*.f*t*") 
+
+
+if len(dark) == 0:      
+   dark = None
+   print('DARK EMPTY')
+if len(bias) == 0:        
+   bias = None
+   print('BIAS EMPTY')
+if len(flat) == 0:        
+   flat = None
+   print('FLAT EMPTY')
+
+#-------------------Construct Detector object----------------------------------------------------
+
+d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
+
+#----------------Estimate images correction and perform asteroids detection----------------------
+
+d.computeImagesDrift(offsetTreshStarsDetection = 0, treshOnReduced = False)
+d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
+
+#---------------Construct Photometry object and launch the photometry----------------------------
+
+phot = Photometry(d)
+phot.start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)
+
+ ~~~
+
+**Caution:** in case where users use semi-automatic procedures, the selection on images are done with the left click and when selection is finish press the right click.
+
+
+
+That is all what is needed. 
