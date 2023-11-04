@@ -178,7 +178,7 @@ class Triangle:
         self.s2 =  np.dot(self.s2, rot) + center
         self.s3 =  np.dot(self.s3, rot) + center
 
-class Patern:
+class Pattern:
     def __init__(self, t1, t2, t3, t4, t5):
         self.t1 = t1
         self.t2 = t2
@@ -253,23 +253,23 @@ class SeqManager:
     def getFileName(self, idx):
         return os.path.basename(self.getPath(idx))
 
-    def getImg(self, i = 0):
-        return Fit(self.seq[i], self.darkM, self.flatM, self.biasM, self.darkExp, self.exposurKey)
+    def getImg(self, idx = 0):
+        return Fit(self.seq[idx], self.darkM, self.flatM, self.biasM, self.darkExp, self.exposurKey)
 
-    def getHDU(self, i = 0, HDU = 0):
-        return self.getImg(i).getHDU(HDU)
+    def getHDU(self, idx = 0, HDU = 0):
+        return self.getImg(idx).getHDU(HDU)
     
-    def getInfo(self, i = 0):
-        return self.getImg(i).getInfo()
+    def getInfo(self, idx = 0):
+        return self.getImg(idx).getInfo()
 
-    def getHeader(self, i = 0, HDU = 0):
-        return self.getImg(i).getHDU(HDU).header
+    def getHeader(self, idx = 0, HDU = 0):
+        return self.getImg(idx).getHDU(HDU).header
     
-    def getExpo(self, i, key, HDU = 0):
-        return self.getImg(i).getExposure(key)
+    def getExpo(self, idx, key, HDU = 0):
+        return self.getImg(idx).getExposure(key)
     
-    def getData(self, i = 0, idx_HDU = 0):
-        return np.asarray(self.getImg(i).getHDU(idx_HDU).data)
+    def getData(self, idx = 0, idx_HDU = 0):
+        return np.asarray(self.getImg(idx).getHDU(idx_HDU).data)
     
     def getCenter(self, idx_img = 0, idx_HDU = 0):
         return self.getImg(idx_img).getCenter(idx_HDU)

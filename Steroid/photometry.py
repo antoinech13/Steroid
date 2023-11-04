@@ -299,7 +299,7 @@ class Photometry:
            
             for ast in range(self.nbOfAst):
                 for star in starPassagesCorrection:
-                    if Utils.dist(star, ap[ast, :]) < 1*self.getFwhm(i):
+                    if Utils.dist(star, ap[ast, :]) < 3*self.getFwhm(i):
                         self.singleton.appDataStarsPassages(self.detector.seqManager.getFileName(i) + '\n')
                         self.starPassages[ast, i] = True
                         break
@@ -365,7 +365,7 @@ class Photometry:
     
       
     
-    def plotDif(self, refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False):
+    def plotDif(self, refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5):
         
         
         if binning == -1: # Auto binning
@@ -396,16 +396,16 @@ class Photometry:
         if ast == -1:
             plt.figure()
             for i in range(asts.shape[1]):
-                plt.scatter(x, asts[:,i] - stars[:, refS], label='ast - s' + str(refS+1), linewidths=1, marker='x')
+                plt.scatter(x, asts[:,i] - stars[:, refS], label='ast - s' + str(refS+1), linewidths=lineWidths, marker='x', s=markerSize)
                 
                 if rmExtremPoint:
-                    plt.scatter(x[idxOfExtremPoints[i]], (asts[:,i] - stars[:, refS])[idxOfExtremPoints[i]], linewidths=1, color = 'r')
+                    plt.scatter(x[idxOfExtremPoints[i]], (asts[:,i] - stars[:, refS])[idxOfExtremPoints[i]], linewidths=lineWidths, color = 'r')
         else:
             plt.figure()
-            plt.scatter(x, asts[:,ast] - stars[:, refS], label='ast - s' + str(refS+1), linewidths=1, marker='x')
+            plt.scatter(x, asts[:,ast] - stars[:, refS], label='ast - s' + str(refS+1), linewidths=lineWidths, marker='x', s = markerSize)
             
             if rmExtremPoint:
-                plt.scatter(x[idxOfExtremPoints[ast]], (asts[:,ast] - stars[:, refS])[idxOfExtremPoints[ast]], linewidths=1, color = 'r')
+                plt.scatter(x[idxOfExtremPoints[ast]], (asts[:,ast] - stars[:, refS])[idxOfExtremPoints[ast]], linewidths=lineWidths, color = 'r')
         
         of = np.zeros(stars.shape[1])
         
@@ -415,9 +415,9 @@ class Photometry:
         for j in range(stars.shape[1]):
             if j != refS:
                 if ast != -1:
-                    plt.scatter(x, (stars[:,j] - stars[:, refS]) + of[j, ast], label='s' + str(j+1) +' - s' + str(refS+1), linewidths=1, marker='x')
+                    plt.scatter(x, (stars[:,j] - stars[:, refS]) + of[j, ast], label='s' + str(j+1) +' - s' + str(refS+1), linewidths=lineWidths, marker='x', s = markerSize)
                 else:
-                    plt.scatter(x, (stars[:,j] - stars[:, refS]) + np.min(of[j]), label='s' + str(j+1) +' - s' + str(refS+1), linewidths=1, marker='x')
+                    plt.scatter(x, (stars[:,j] - stars[:, refS]) + np.min(of[j]), label='s' + str(j+1) +' - s' + str(refS+1), linewidths=lineWidths, marker='x', s = markerSize)
                 
         plt.legend()        
         if yRange != None:
@@ -431,7 +431,7 @@ class Photometry:
             
         plt.show()
         
-    def plot(self, yRange = None, binning = 1, selection = None, inMag = True, forma = 'jd', xtick = None):
+    def plot(self, yRange = None, binning = 1, selection = None, inMag = True, forma = 'jd', xtick = None, markerSize = 100):
         
         if inMag:
             print("result in Mag")
@@ -450,16 +450,16 @@ class Photometry:
         plt.figure()
         if selection == None:
             for i in range(asts.shape[1]):
-                plt.scatter(x, asts[:, i], label='ast ' + str(i+1), linewidths=1, marker='x')
+                plt.scatter(x, asts[:, i], label='ast ' + str(i+1), linewidths=1, marker='x', s = markerSize)
             for j in range(stars.shape[1]):
-                plt.scatter(x, stars[:, j], label='s' + str(j+1), linewidths=1, marker='x')
+                plt.scatter(x, stars[:, j], label='s' + str(j+1), linewidths=1, marker='x', s = markerSize)
         else:
             for i in range(len(selection)):
                 if selection[i] < asts.shape[1]:
-                    plt.scatter(x, asts[:, i], label='ast ' + str(i+1), linewidths=1, marker='x')
+                    plt.scatter(x, asts[:, i], label='ast ' + str(i+1), linewidths=1, marker='x', s = markerSize)
                 else:
                     j = i - asts.shape[1]
-                    plt.scatter(x, stars[:, j], label='s' + str(j+1), linewidths=1, marker='x')
+                    plt.scatter(x, stars[:, j], label='s' + str(j+1), linewidths=1, marker='x', s = markerSize)
                 
                 
         plt.legend()   
@@ -731,7 +731,7 @@ class Photometry:
          
         return sol
     
-    def sisa(self, s, ast, eps = 1.5):
+    def sisa(self, s, ast, eps = 2):
         return s[0] < ast[0] + eps and s[0] > ast[0] - eps and s[1] < ast[1] + eps and s[1] > ast[1] - eps
                
     def StarPassages(self, ofs = 15000):
@@ -744,7 +744,7 @@ class Photometry:
         
         s1 = self.detector.correctStars(s1, idxF)
         s2 = self.detector.correctStars(s2, idxE)
-        
+                
         astsFirstPos = self.detector.getAstPositionAtImg(idxF)
         astsLastPos = self.detector.getAstPositionAtImg(idxE)
         
@@ -765,6 +765,45 @@ class Photometry:
                     listOfStars[i].append(s)
 
         return listOfStars
+        
+    def checkBox(self, ofs):
+        
+        a, b = self.astPathLinearCoef()
+        vertices = np.asarray(self.buildBoxAreaArrountAstPath(a))
+        idxF, idxE = self.detector.findBestIdx()
+        print("first image idx: ", idxF, "last image idx: ", idxE)
+        
+        
+        pot = self.detector.asteroidsPositionFirstImage[-1]
+        astsFirstPos = self.detector.getAstPositionAtImg(idxF)
+        astsLastPos = self.detector.getAstPositionAtImg(idxE)
+        
+        im = self.detector.getData(idxF)
+        
+        plt.imshow(im, vmin = np.median(im) - np.std(im), vmax = np.median(im) + np.std(im), cmap = "Greys")
+        
+        starsInBox = np.asarray(self.StarPassages(ofs))
+        
+        
+        s1 = self.detector.getImg(idxF).findStars(self.detector.getImg(idxF).getTresh() + ofs)
+
+        s2 = self.detector.getImg(idxE).findStars(self.detector.getImg(idxE).getTresh() + ofs)
+        
+        s1 = self.detector.correctStars(s1, idxF)
+        s2 = self.detector.correctStars(s2, idxE)
+
+        
+        
+        for ver in vertices:
+            plt.scatter(ver[:, 0], ver[:, 1], color = 'blue')
+        
+        for ss in starsInBox:
+            plt.scatter(ss[:,0], ss[:, 1], marker = "x", linewidths=1, color = 'red')
+        
+        plt.scatter([astsFirstPos[0,0], astsLastPos[0,0]], [astsFirstPos[0,1], astsLastPos[0,1]], color= "orange", s = 10 )
+        plt.scatter(pot[0], pot[1], color = "green", s=10)
+        
+  
         
         
                 
@@ -1106,15 +1145,15 @@ if __name__ == '__main__':
   
     
     
-    path = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\arg\19-10-23Arg/"
-    res = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\arg\res/19-10-23Arg/"
+    path = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\Suh\20-10-22Suh\2020-10-22_gunlod/"
+    res = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\Suh/res\20-10-22Suh\pres/"
     
 
-    seq = list(np.asarray(glob.glob(path + "adelaide/"+ "*.f*t*")))
+    seq = list(np.asarray(glob.glob(path + "*gun*.f*t*"))[:])
     # seq = [seq[0], seq[73],seq[-1]]
-    dark = glob.glob(path + "dark/"+ "*Dark*.f*t*")
-    flat = glob.glob(path + "flat/"+ "*flat*r*.f*t*")
-    bias = glob.glob(path + "bias/"+ "*bias*.f*t*")
+    dark = glob.glob(path + "*dark*.f*t*")
+    flat = glob.glob(path + "*flat*.f*t*")
+    bias = glob.glob(path + "*bias*.f*t*")
     
     #------------ex photometry---------------
 
@@ -1129,16 +1168,13 @@ if __name__ == '__main__':
         print('FLAT EMPTY')
 
     d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
-  
-    d.computeImagesCorrection(0, True)
-    print('done')
-    drift = d.drifts
-    
+    d.computeImagesCorrection(1000, True)
+    print('done')    
 
-    d.findAsteroid(1000, True)
+    d.findAsteroid(700, True)
     
     phot = Photometry(d)
-    phot.start(3, True, starPassageOfs = 1000)
+    phot.start(3, False, starPassageOfs = 500)
     
     # ----------------ex occult-----------------
     # path = 'C:\\Users\\antoine\\OneDrive\\Documents\\PHD\\lightcurve\\entrainement\\Adorea\\reduced\\target-c1\\'

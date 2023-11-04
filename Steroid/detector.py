@@ -129,6 +129,7 @@ class Detector(Corrector):
     def extractAst(self, dif, idxofFirstImg, idxOfSecondIng, distMax = 200):
         ast = []
         idx = []
+        time0 = self.getImg(0).getTime(self.key, self.format)
         time1 = self.getImg(idxofFirstImg).getTime(self.key, self.format)
         time2 = self.getImg(idxOfSecondIng).getTime(self.key, self.format)
         print("img1: ", idxofFirstImg, "img2: ", idxOfSecondIng)
@@ -140,10 +141,12 @@ class Detector(Corrector):
                 if Utils.dist(e,f) < distMax and not self.isOutOfBoundaries(e) and not self.isOutOfBoundaries(f) and not Utils.isPresent(idx, i) and i != j and not self.isStar(e, idxofFirstImg, idxOfSecondIng) and not self.isStar(f, idxofFirstImg, idxOfSecondIng):
                     # print("idx: ", Utils.isPresent(idx, i),idx, i, j, 'eeee: ', e, ' fff: ', f)
                     print("e: ", e, "f: ", f,"dist: ", Utils.dist(e,f) < distMax, "e out boundarie: ", not self.isOutOfBoundaries(e), "f out boundarie: ", not self.isOutOfBoundaries(f), "i is present: ", not Utils.isPresent(idx, i), "i!=j: ", i != j, "e not isstar: ", not self.isStar(e, idxofFirstImg, idxOfSecondIng), "f not isstar: ", not self.isStar(f, idxofFirstImg, idxOfSecondIng))
-                    ast.append(e)
+                    self.asteroidsSpeed.append((e-f)/(time2 - time1).to_value('sec'))
+                    ast.append(e - self.asteroidsSpeed[-1] * (time0 - time1).to_value('sec'))
+                    
                     idx.append(i)
                     
-                    self.asteroidsSpeed.append((e-f)/(time2 - time1).to_value('sec'))
+                    
                     print('-------------------------------------------------------------------------\natsteroid Position first img   asteroid position last img   deltImg   speed by img,             estimation pos of ast on last\n', e, '                   ', f, '              ' , time2 - time1, '       ', (e-f)/(time2 - time1), e-(time2 - time1)*(e-f)/(time2 - time1), '\n-------------------------------------------------------------------------')
                 
         return ast
@@ -190,10 +193,8 @@ class Detector(Corrector):
         stars1 = self.correctStarsFromRot(stars1, idxOfFirst)
         stars1 = stars1 - dr.astype(float)
         stars2 = np.asarray(self.getImg(idxOfSecond).findStars(self.getImg(idxOfFirst).getTresh(treshOnReduced) + offsetTreshAstsDetection, treshOnReduced)) #- dr  #+ np.std(self.getData(idxOfSecond))
-        print(stars2)
         stars2 = self.correctStarsFromRot(stars2, idxOfSecond)
         stars2 = stars2 - dr2.astype(float)
-        print(stars2)
         
         Utils.imshowstar(self.getData(idxOfFirst), stars1, -self.avgAng(idxOfFirst), dr)
         Utils.imshowstar(self.getData(idxOfSecond), stars2, -self.avgAng(idxOfSecond), dr2)
@@ -202,6 +203,8 @@ class Detector(Corrector):
         print("dif1:", self.findDifStar(stars1, stars2, eps), "dif2:",self.findDifStar(stars2, stars1, eps))
         dif = self.findDifStar(stars1, stars2, eps) + self.findDifStar(stars2, stars1, eps)
         self.asteroidsPositionFirstImage = self.extractAst(dif, idxOfFirst, idxOfSecond)
+        
+        Utils.imshowstar(self.getData(idxOfFirst), np.asarray(dif), -self.avgAng(idxOfFirst), dr)
         
     def findDriftExtrema(self):
         maxx = -100000
@@ -214,77 +217,6 @@ class Detector(Corrector):
                 
         return np.ones((2), dtype=int)*maxx
     
-    
-        
-    def checkImgAlignement(self, idx_of_image):
-
-        img1 = self.getData(0)
-
-        img3 = self.correctedImg(idx_of_image) + img1 
-        fig,ax = plt.subplots(1)
-        ax.imshow(img3, cmap="Greys", vmin = np.mean(img3)*0.5, vmax = np.mean(img3)/0.5)
-        
-    def show(self, idx, ang = 0, drift = np.zeros(2)):
-        img = self.getData(idx)
-        Utils.rotate_image(img, -Utils.rtod(ang))
-        
-        img = np.roll(img, -int(drift[0]+0.5), axis=1)
-        img = np.roll(img, -int(drift[1]+0.5), axis=0)
-        
-        
-        fig,ax = plt.subplots(1)
-        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
-        
-        
-        
-    def add(self, idximg1, idximg2):
-        img = (self.getData(idximg1) + self.getData(idximg2))/2
-        fig,ax = plt.subplots(1)
-        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
-        
-    def showStarsOfTwoImg(self, idxOfSecond):
-        img1 = self.getData()
-        img2 = self.getData(idxOfSecond)
-        s1 = self.starsPosition[0]
-        s2 = self.starsPosition[idxOfSecond]
-        s2 = s2 - self.avgDrif(idxOfSecond)
-        
-        fig,ax = plt.subplots(1)
-        
-        for i in range(s1.shape[0]):
-            c = Circle(s1[i], radius = 25, fill=False)
-            ax.add_patch(c)
-            
-        for i in range(s2.shape[0]):
-            c = Circle(s2[i], radius = 25, fill=False, color="r")
-            ax.add_patch(c)
-        
-        ax.imshow((img1+img2)*0.5, cmap="Greys", vmin = np.mean((img1+img2)*0.5)*0.5, vmax = np.mean((img1+img2)*0.5)/0.5)
-        
-        
-        
-    def div(self, idx_of_image):
-        img = self.getData(idx_of_image)
-        dr = self.avgDrif(idx_of_image)
-        img1 = self.getData(0)
-        img2 = np.roll(img, -int(dr[0]+0.5), axis = 1)
-        img2 = np.roll(img2, -int(dr[1]+0.5), axis = 0)
-        
-        img3 = (img1 / img2)
-        fig,ax = plt.subplots(1)
-        ax.imshow(img3, cmap="Greys", vmin = np.mean(img3)*0.5, vmax = np.mean(img3)/0.5)
-        return img3
-
-
-    def imshowstarrot(self, idx = 0):
-        stars = self.starsPosition[idx]
-        img = self.getData(idx)
-        img = Utils.rotate_image(img, -Utils.rtod(self.avgAng(idx)))
-        fig,ax = plt.subplots(1)
-        for i in stars:
-            c = Circle(i, radius = 25, fill=False)
-            ax.add_patch(c)
-        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
         
     def astSpeed(self, idx = 0):
         """
@@ -348,8 +280,8 @@ class Detector(Corrector):
             
         return idx
         
-    def getAstPositionAtImg(self, idx):
-        return np.asarray(self.asteroidsPositionFirstImage) - (self.getImg(idx).getTime(self.key, self.format) - self.getImg().getTime(self.key,  self.format)).to_value("sec")*np.asarray(self.asteroidsSpeed)
+    def getAstPositionAtImg(self, idx): #pos0 - (timei - time0) * speed
+        return np.asarray(self.asteroidsPositionFirstImage) - ( self.getImg(idx).getTime(self.key, self.format) - self.getImg().getTime(self.key,  self.format)).to_value("sec")*np.asarray(self.asteroidsSpeed)
     
     def nofa(self):
         return np.asarray(self.asteroidsPositionFirstImage).shape[0]

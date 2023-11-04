@@ -110,7 +110,7 @@ class Corrector:
         for i in range(len(starsList)): #iterate over all stars of an image
             stars = self.findCloseststars(starsList, i)
             t1, t2, t3, t4, t5 = self.buildTriangles(starsList[stars.astype(int)])
-            patern.append(Patern(t1, t2, t3, t4, t5))
+            patern.append(Pattern(t1, t2, t3, t4, t5))
         return patern
     
     def buildPaterns(self):
@@ -167,7 +167,7 @@ class Corrector:
      
         return np.dot(stars, rot) + center
      
-    def correctStarsFromRotTest(self, arrayToCorrect, idx, coefMultAngle = -1):
+    def correctStarsFromRotTest(self, arrayToCorrect, idx, coefMultAngle = -1): #not use
         
         arrayToCorrect = np.asarray(arrayToCorrect)
         print("before", arrayToCorrect[0])
@@ -197,7 +197,7 @@ class Corrector:
         if arrayToCorrect.shape[0] == 0:
             return arrayToCorrect
         
-        return self.correctStarsFromRot(arrayToCorrect+ coefMultAngle*self.avgDrif(idx), idx, coefMultAngle) 
+        return self.correctStarsFromRot(arrayToCorrect + coefMultAngle*self.avgDrif(idx), idx, coefMultAngle) 
     
       
         
@@ -346,8 +346,10 @@ class Corrector:
             c = Circle(i, radius = 20, fill=False)
             ax.add_patch(c)
         ax.imshow(img, cmap="Greys", vmin = np.mean(img[img>0])*0.5, vmax = np.mean(img[img>0])/0.5)
+        ax.scatter(stars[:,0], stars[:, 1], color = 'red')
         
-    def checkPaterns(self, idxOfImage = 0, patidx = None):
+        
+    def checkPatterns(self, idxOfImage = 0, patidx = None):
         def patToArw(pat):
             s1 = pat.t1.s1
             s2 = pat.t1.s2
@@ -378,4 +380,74 @@ class Corrector:
                 ax.add_patch(a4)
             
         img = Utils.rotate_image(self.getData(idxOfImage), -Utils.rtod(self.avgAng(idxOfImage)))
+        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
+        
+    def checkImgAlignement(self, idx_of_image):
+    
+        img1 = self.getData(0)
+    
+        img3 = self.correctedImg(idx_of_image) + img1 
+        fig,ax = plt.subplots(1)
+        ax.imshow(img3, cmap="Greys", vmin = np.mean(img3)*0.5, vmax = np.mean(img3)/0.5)
+        
+    def show(self, idx, ang = 0, drift = np.zeros(2)):
+        img = self.getData(idx)
+        Utils.rotate_image(img, -Utils.rtod(ang))
+        
+        img = np.roll(img, -int(drift[0]+0.5), axis=1)
+        img = np.roll(img, -int(drift[1]+0.5), axis=0)
+        
+        
+        fig,ax = plt.subplots(1)
+        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
+        
+        
+        
+    def add(self, idximg1, idximg2):
+        img = (self.getData(idximg1) + self.getData(idximg2))/2
+        fig,ax = plt.subplots(1)
+        ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)
+        
+    def showStarsOfTwoImg(self, idxOfSecond):
+        img1 = self.getData()
+        img2 = self.getData(idxOfSecond)
+        s1 = self.starsPosition[0]
+        s2 = self.starsPosition[idxOfSecond]
+        s2 = s2 - self.avgDrif(idxOfSecond)
+        
+        fig,ax = plt.subplots(1)
+        
+        for i in range(s1.shape[0]):
+            c = Circle(s1[i], radius = 25, fill=False)
+            ax.add_patch(c)
+            
+        for i in range(s2.shape[0]):
+            c = Circle(s2[i], radius = 25, fill=False, color="r")
+            ax.add_patch(c)
+        
+        ax.imshow((img1+img2)*0.5, cmap="Greys", vmin = np.mean((img1+img2)*0.5)*0.5, vmax = np.mean((img1+img2)*0.5)/0.5)
+        
+        
+        
+    def div(self, idx_of_image):
+        img = self.getData(idx_of_image)
+        dr = self.avgDrif(idx_of_image)
+        img1 = self.getData(0)
+        img2 = np.roll(img, -int(dr[0]+0.5), axis = 1)
+        img2 = np.roll(img2, -int(dr[1]+0.5), axis = 0)
+        
+        img3 = (img1 / img2)
+        fig,ax = plt.subplots(1)
+        ax.imshow(img3, cmap="Greys", vmin = np.mean(img3)*0.5, vmax = np.mean(img3)/0.5)
+        return img3
+    
+    
+    def imshowstarrot(self, idx = 0):
+        stars = self.starsPosition[idx]
+        img = self.getData(idx)
+        img = Utils.rotate_image(img, -Utils.rtod(self.avgAng(idx)))
+        fig,ax = plt.subplots(1)
+        for i in stars:
+            c = Circle(i, radius = 25, fill=False)
+            ax.add_patch(c)
         ax.imshow(img, cmap="Greys", vmin = np.mean(img)*0.5, vmax = np.mean(img)/0.5)

@@ -338,4 +338,5 @@ class Utils:
     
     def stojd(time):
         return time / 86400
+  
         
