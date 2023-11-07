@@ -176,7 +176,7 @@ This class is dedicated to detect moving object. it's internaly stor a list of m
 
 **Methods:**
 
-***computeImagesDrift(offsetTreshStarsDetection = 0, treshOnReduced = False)***
+***computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)***
 
   -  description: call the function computeImagesCorrection from *Corrector* than reject all bad data (without drift or/and angle values detected)
   -  input: (FLOAT) a offset that can be add to adjust treshold value. (BOOLEAN) if the treshold should be estimated on reduced images or raw
