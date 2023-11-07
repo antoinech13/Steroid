@@ -456,7 +456,7 @@ Photometry take only one optional paramters of type (Detector). Why optional? be
 - description: launch the photometry according to some input parameters
 - input: (INT) number of reference stars (only in case of automatic procedure), (BOOLEAN) center or not appertures of center of brightness, (FLOAT) maximum value that automatic reference stars automaticly selected should not overstep. (FLOAT) the threshold to detect stars in the context of stars passages
 
-***plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False)*** 
+***plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5)*** 
 
 - description: Perform plot of differential photometry
 - input: - (INT) refS is the index of the star selected as reference \
@@ -475,6 +475,8 @@ Photometry take only one optional paramters of type (Detector). Why optional? be
   &emsp;&emsp;&ensp; - (INT) deg. Degree of the polynome. \
   &emsp;&emsp;&ensp; - (BOOLEAN) displayRmFit. if True, display more plot to monitore rmExtremPoint. \
   &emsp;&emsp;&ensp; - (BOOLEAN) starPassage. if True, will remove star's passages \
+  &emsp;&emsp;&ensp; - (INT) markerSize. Correspond to the size of marker \
+  &emsp;&emsp;&ensp; - (INT) lineWidths. Correspond to the thickness of marker 
 
 ***toDat(path, filename, binning = 1, forma = 'mjd', refS = -1, deg = 4, cStd = 2, displayRmFit = False)***
 
