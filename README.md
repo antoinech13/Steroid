@@ -572,7 +572,7 @@ an exemple of a piece of code that can be use to build an object *Detector*:
 
 The next step is to launch *Detector* methods to correct images and to detect asteroids:
 
-    d.computeImagesDrift(offsetTreshStarsDetection = 0, treshOnReduced = False)
+    d.computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)
     d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
 
 ***computeImagesDrift*** could me internally called in ***findAsteroid*** but we choose to let it like this to give more flexibility to users. Indeed, In this process, ***computeImagesDrift*** will take more time has it has to detect stars from all images of the sequence. Also it's the proccesse the less sensitive to the detection treshold. Indeed, it's only need 5 common stars on each frames to be able to correct images. According to this, users can earn time of execution setting up a high value of **offsetTreshStarsDetection**. For the same reason, **treshOnReduced** can be set to False.  
@@ -634,7 +634,7 @@ d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
 
 #----------------Estimate images correction and perform asteroids detection----------------------
 
-d.computeImagesDrift(offsetTreshStarsDetection = 0, treshOnReduced = False)
+d.computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)
 d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
 
 #---------------Construct Photometry object and launch the photometry----------------------------
