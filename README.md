@@ -504,6 +504,16 @@ Photometry take only one optional paramters of type (Detector). Why optional? be
 - description: load a csv file produced with the method ***toCsv***. can be use to rework plots
 - input: (STRING) path + file name with extention (ex: r"C:/.../myCsv.csv")
 
+***showAp(idx)***
+
+- description: display the image at idx and show appertures position
+- intput: (INT) idx: index of the image in the image sequence
+
+***checkBox(ofs)***
+
+- description: display one of the first image of the sequence and show asteroids position at the begining and at the end of the sequence, plus boxes vertices, plus all object detected inside the boxe (BUT NOT ASTEROIDS)
+- input: (FLOAT) ofs: offset add to treshold to detect objects. To debug star passages, should be identic to the starPassageOfs parameter of the *start* method.
+
 </details>
 
 
