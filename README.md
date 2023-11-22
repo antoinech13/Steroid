@@ -652,6 +652,8 @@ d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
 phot = Photometry(d)
 phot.start(nbOfStars = 3, center = True, maxVal = 30000, starPassageOfs = 15000)
 
+phot.plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5)
+
  ~~~
 
 **Caution:** in case where users use semi-automatic procedures, the selection on images are done with the left click and when selection is finish press the right click.
