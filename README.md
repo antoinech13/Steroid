@@ -650,7 +650,7 @@ d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
 #---------------Construct Photometry object and launch the photometry----------------------------
 
 phot = Photometry(d)
-phot.start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)
+phot.start(nbOfStars = 3, center = True, maxVal = 30000, starPassageOfs = 15000)
 
  ~~~
 
