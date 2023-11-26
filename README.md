@@ -3,13 +3,18 @@
 Steroid is a python package dedicated to help users to developpe their own automatic or semi-automatic procedure in way to correct frame and/or to performe photometry.
 
   ## Summary
+  1. [Code Structur](#code-structure)
+  2. [Classes Description](#classes-description)
+     1. [Corrector](#corrector)
+        1. [Description](#corrector-description)
+        2. [Constructor](#corrector-constructor)
 
   
 
-  ## Code Structur
+  ## Code Structur <a name="code-structure"></a>
 
 
-  ## Classes Description
+  ## Classes Description <a name="classes-description"></a>
 
   in this section, we will details all classes of the code and we will details some methods that could be usefull for users
 
@@ -17,16 +22,16 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
   <summary> 
     
-  ### Corrector 
+  ### Corrector <a name="corrector"></a>
   
   </summary>
   
 
-  **Description:**
+  **Description:** <a name="corrector-description"></a>
 
   Astronomical images from the same sequence are rarely aligned with each other. It is common to observe, at best, a drift in both the x and y directions between each image, and at worst, a field rotation. This misalignment can have several origins, but as the  main cause, we can note the type of telescope mount (equatorial or azimuthal), as well as the quality of the mechanics, the presence or absence of guiding, the alignment, a meridian flip, etc. The "Corrector" class is therefore aimed at estimating the drift and the rotation angle between each image in the same sequence. It also provides several functionalities to the user, allowing either simple position correction or direct image correction. In the case of photometric studies, it is preferable not to correct the images directly. Indeed, due to the discrete nature of an image, a rotation of it will introduce undesirable artifacts in the image. In the case of an amateur who simply wants to do astrophotography, it is possible to directly correct the image and apply interpolation to obtain an image without visible artifacts.
 
-  **Constructor:**
+  **Constructor:** <a name="corrector-constructor"></a>
   
   ***Corrector(seqManager, flatSeq = None, biasSeq = None, darkSeq = None, exposurKey = None):***
    
