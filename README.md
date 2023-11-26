@@ -509,7 +509,74 @@ this data structure is dedicated to manage appertures. It's take as input a 2D n
   ***getInfo():***
 
   -  description: print information of the image
-  
+
+  ***getHeader(HDU = 0):***
+
+  -  description: get the header of the HDU
+  -  input: (INT) DHU index
+  -  return: (astropy.io.fits.header.Header)
+
+  ***getExposure(self, key, HDU = 0):***
+
+  -  description: get the exposure
+  -  input: (STRING) key in the header corresponding to the exposure, (INT) index of the HDU of interest
+  -  output: (FLOAT)
+
+  ***getTime(key, forma, HDU = 0):***
+
+  -  description: get the time from the header
+  -  input: (STRING) key in the header corresponding to the time, (STING) forma of thet time store in the header, (INT) index of the HDU of interest
+  -  output: (FLOAT)
+
+  ***getData(idx_HDU = 0):***
+
+  -  description: get the image data as a matrice
+  -  input: (INT) idx of HDU of interest
+  -  output: (NUMPY.ARRAY) matrice of the image
+
+  ***getReducedData(HDU = 0):***
+
+  -  description: get the reduced image data as a matrice
+  -  input: (INT) idx of HDU of interest
+  -  output: (NUMPY.ARRAY) matrice of the reduced image
+
+  ***getCenter(idx_HDU = 0):***
+
+  -  description: return the center of the image
+  -  input: (INT) idx of the HDU of interest
+  -  output: (TUPLE)
+
+  ***getShape(idx_HDU = 0):***
+
+  -  description: get the shape of the image
+  -  input: (INT) idx of the HDu of interest
+  -  output: (numpy.ndarray)
+
+  ***getTresh(reduced = False, display = False):***
+
+  -  description: method to automaticly determine the best treshold value to binarize the image
+  -  input: (BOOLEAN) if set to true will evaluate treshold on reduced frame, (BOOLEAN) if set to true, will plot informations to help to debug
+  -  output: (FLOAT) treshold value 
+
+
+  ***findStars(tresh = None, onReduced = False):***
+
+  -  description: find all object (not only stars) present on frames
+  -  input: (float) treshold value. If set to None, will be set to 1.5*median, (BOOLEAN) if set to true will find object on reduced frame
+  -  output: (NUMPY.ARRAY) x,y coordinates of object center in the frame
+
+  ***histogram(idx_HDU = 0):***
+
+  -  description: compute histogram of the HDU of interest
+  -  input: (INT) idx of HDU of interest
+  -  output: (TUPLE(NUMPY.ARRAY, NUMPY.ARRAY)) the first array correspond to the histogram and the second to the bin_edges (see https://numpy.org/doc/stable/reference/generated/numpy.histogram.html).
+
+  ***reducedHistogram(idx_HDU = 0):***
+
+  -  description: compute histogram of the HDU of interest on reduced frame
+  -  input: (INT) idx of HDU of interest
+  -  output: (TUPLE(NUMPY.ARRAY, NUMPY.ARRAY)) the first array correspond to the histogram and the second to the bin_edges (see https://numpy.org/doc/stable/reference/generated/numpy.histogram.html).
+
 </details>
 
 
