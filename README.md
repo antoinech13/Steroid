@@ -8,6 +8,12 @@ Steroid is a python package dedicated to help users to developpe their own autom
      1. [Corrector](#corrector)
         1. [Description](#corrector-description)
         2. [Constructor](#corrector-constructor)
+        3. [Methods](#corrector-methods)
+     2. [Detector](#detector)
+        1. [Description](#detector-description)
+        2. [Constructor](#detector-constructor)
+        3. [Methods](#detector-methods)
+      
 
   
 
@@ -20,7 +26,7 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
   <details>
 
-  <summary> 
+  <summary id="corrector"> 
     
   ### Corrector <a name="corrector"></a>
   
@@ -41,7 +47,7 @@ Steroid is a python package dedicated to help users to developpe their own autom
   -  (optional) a list of path (list of string) for the flat sequence, a list of path (list of string) for the bias sequence, a list of path (list of string) for the dark sequence and a string which correspond to the fit header key of the exposure (usually exposure is store in fits header under the key EXPOSURE or EXPTIME)
 
 
-  **Methods:**
+  **Methods:** <a name="corrector-methods"></a>
   
   
    ***getImgShape(idx = 0, idx_HDU = 0):*** 
@@ -159,18 +165,18 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
   <summary> 
     
-  ### Detector 
+  ### Detector <a name="detector"></a>
   
   </summary>
  
 
 
-**Description:**
+**Description:** <a name="detector-description"></a>
 
 This class is dedicated to detect moving object. it's internaly stor a list of moving objects position and and other list of their speed along x and y axis. with inital poistions and speed, it's easy to determine the position of moving objects on each frames.
 
 
-**Constructor:**
+**Constructor:** <a name="detector-constructor"></a>
 
 ***Detector(imageSeq, flatSeq = None, biasSeq = None, darkSeq = None):***
 
@@ -179,7 +185,7 @@ This class is dedicated to detect moving object. it's internaly stor a list of m
   -  (mandotory) a list of path (list of string) of the main image sequence
   -  (optional) a list of path (list of string) for the flat sequence, a list of path (list of string) for the bias sequence and a list of path (list of string) for the dark sequence.
 
-**Methods:**
+**Methods:** <a name="detector-methods"></a>
 
 ***computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)***
 
@@ -430,6 +436,82 @@ seq is just a list of path of raw images (STRING)
 -  return: (numpy.array) histogram, (numpy.array) bin edgesarray (see numpy.histogram) 
 
 </details>
+
+<details>
+
+  <summary> 
+    
+  ### Appertures:
+  
+  </summary>
+
+**Description:** <a name="datastruct-appertures-desciption"></a>
+
+this data structure is dedicated to manage appertures. It's take as input a 2D numpy.array of appertures positions with appertures sizes and can manage the photometry
+
+**Constructor:** <a name="datastruct-appertures-constructor"></a>
+
+***Appertures(positions, idxOfStars = None, r = 3, ri = 6, re = 8):*** 
+
+-  positions: 2D (NUMPY.ARRAY) of position of appertures of all objects. first rows should be targets and last rows should be reference stars for differential photometry if needed.
+-  idxOfStars: (INT) index of the row in positions where references stars appertures positions are stores.
+-  r: (FLOAT) inner radius of appertures
+-  ri: (FLOAT) radius of the death area of appertures
+-  re: (FLOAT) radius of the backgroud apperture
+
+**Methods:** <a name="datastruct-appertures-methods"></a>
+
+***photom(img, key, forma, center = False, exposure = None):***
+
+-  desciption: perform the photometry and allow users to center the time at mid of exposure if time in the header is set at the beginning of exposure
+-  input: - img: (FIT) FIT object of the image use for the photometry \
+  &emsp;&emsp;&ensp; - key: (STRING) Keyword of the time in the header \
+  &emsp;&emsp;&ensp; - forma: (STRING) format of the time in the header \
+  &emsp;&emsp;&ensp; -  center: (BOOLEAN) set to true to center the time in case if the time in header was took at the beginning of exposure. \
+  &emsp;&emsp;&ensp; -  exposure: (FLOAT) exposure time  
+-  output : (astropy.table.table.QTable) resume of the photometry
+  
+</details>
+
+
+<details>
+
+  <summary>
+
+  ### Fit: <a name="datastruct-fit"></a>
+    
+  </summary>
+
+
+  **Description:** <a name="datastruct-fit-description"></a>
+
+  this structure is dedicated to manage fit images. a lot of methods are also done to manage operation on images
+
+  **Constructor:** <a name="datastruct-fit-constructor"></a>
+
+  ***Fit(path, dark = 0, flat = 1, bias = 0, darkExp = None, exposurKey = None):***
+
+  -  path: (STRING) path of the image in the user's system
+  -  dark: (NUMPY.ARRAY) master dark
+  -  flat: (NUMPY.ARRAY) master flat
+  -  bias: (NUMPY.ARRAY) master bias
+  -  darkExp: (FLOAT) exposure of dark images
+  -  exposurKey: (STRIGN) the key in the header where exposure is store
+
+  **Methods** <a name="datastruct-fit-methods"></a>
+
+  ***getHDU(i = 0):***
+
+  -  description: get HDU of the image i
+  -  input: (INT) idx of the HDU to get
+  -  return: (astropy.io.fits.hdu.image.PrimaryHDU) 
+
+  ***getInfo():***
+
+  -  description: print information of the image
+  
+</details>
+
 
 ## Photometry:
 
