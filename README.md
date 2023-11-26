@@ -13,10 +13,31 @@ Steroid is a python package dedicated to help users to developpe their own autom
         1. [Description](#detector-description)
         2. [Constructor](#detector-constructor)
         3. [Methods](#detector-methods)
-      
-
-  
-
+  3. [Data structure](#datastruct)
+     1. [Triangle](#datastruct-triangle)
+        1. [Description](#datastruct-triangle-description)
+        2. [Constructor](#datastruct-triangle-constructor)
+        3. [Methods](#datastruct-triangle-methods)
+     2. [Pattern](#datastruct-pattern)
+        1. [Description](#datastruct-pattern-description)
+        2. [Constructor](#datastruct-pattern-constructor)
+        3. [Methods](#datastruct-pattern-methods)
+     3. [SeqManager](#datastruct-seqmanager)
+        1. [Description](#datastruct-seqmanager-description)
+        2. [Constructor](#datastruct-seqmanager-constructor)
+        3. [Methods](#datastruct-seqmanager-methods)
+     4. [Appertures](#datastruct-appertures)
+        1. [Description](#datastruct-appertures-description)
+        2. [Constructor](#datastruct-appertures-constructor)
+        3. [Methods](#datastruct-appertures-methods)
+     5. [Fit](#datastruct-fit)
+        1. [Description](#datastruct-fit-description)
+        2. [Constructor](#datastruct-fit-constructor)
+        3. [Methods](#datastruct-fit-methods)
+  4. [Photometry](#photometry)
+     1. [Description](#photometry-description)
+     2. [Methods](#photometry-methods)
+     3. [How to use](#photometry-howtouse)
   ## Code Structur <a name="code-structure"></a>
 
 
@@ -227,7 +248,7 @@ This class is dedicated to detect moving object. it's internaly stor a list of m
 
 </details>
 
-## Data structure description:
+## Data structure description: <a name="datastruct"></a>
 
 this section is dedicated to talk about some classes store in the file data_structurs. 
 
@@ -235,24 +256,24 @@ this section is dedicated to talk about some classes store in the file data_stru
 
   <summary> 
     
-  ### Triangle
+  ### Triangle<a name="datastruct-triangle"></a>
   
   </summary>
 
 
 
-**Description:**
+**Description:** <a name="datastruct-triangle-description"></a>
 
 This class store 3 stars and represent a triangle. this class overload the addition, substraction, division, multiplication, comparaison et also \_\_str\_\_
 
-**Constructor:**
+**Constructor:**<a name="datastruct-triangle-constructor"></a>
 
 ***Triangle(s1, s2, s3, eps = 2):***
 
 s1, s2 and s2 are (numpy.array). eps is a tolerence used in the \_\_eq\_\_ to estimate if two triangles are equal or not
 
 
-**Methods:**
+**Methods:**<a name="datastruct-triangle-methods"></a>
 
 ***d1():***
 
@@ -299,23 +320,23 @@ s1, s2 and s2 are (numpy.array). eps is a tolerence used in the \_\_eq\_\_ to es
 
   <summary> 
     
-  ### Pattern:
+  ### Pattern: <a name="datastruct-pattern"></a>
   
   </summary>
 
 
 
-**Desciption:**
+**Desciption:**<a name="datastruct-pattern-description"></a>
 
 this class store Triangles as a pattern. the addition, substraction, multiplication, division, comparaison and \_\_str\_\_ are overloaded
 
-**Constructor**
+**Constructor**<a name="datastruct-pattern-constructor"></a>
 
 ***Pattern(t1, t2, t3, t4, t5):***
 
 t1, t2, t3, t4 and t5 are Triangle object (see the datastructure class *Triangle*)
 
-**Methods:**
+**Methods:**<a name="datastruct-pattern-methods"></a>
 
 ***computeDistance(other):***
 
@@ -341,23 +362,23 @@ t1, t2, t3, t4 and t5 are Triangle object (see the datastructure class *Triangle
 
   <summary> 
     
-  ### SeqManager:
+  ### SeqManager:<a name="datastruct-seqmanager"></a>
   
   </summary>
 
 
 
-**Description:**
+**Description:**<a name="datastruct-seqmanager-description"></a>
 
 this class store list of images path from a same sequence
 
-**Constructor:**
+**Constructor:**<a name="datastruct-seqmanager-constructor"></a>
 
 ***SeqManager(seq):"""
 
 seq is just a list of path of raw images (STRING)
 
-**Methods:**
+**Methods:**<a name="datastruct-seqmanager-methods"></a>
 
 ***getPath(idx):***
 
@@ -441,11 +462,11 @@ seq is just a list of path of raw images (STRING)
 
   <summary> 
     
-  ### Appertures:
+  ### Appertures:<a name="datastruct-appertures"></a>
   
   </summary>
 
-**Description:** <a name="datastruct-appertures-desciption"></a>
+**Description:** <a name="datastruct-appertures-description"></a>
 
 this data structure is dedicated to manage appertures. It's take as input a 2D numpy.array of appertures positions with appertures sizes and can manage the photometry
 
@@ -580,10 +601,10 @@ this data structure is dedicated to manage appertures. It's take as input a 2D n
 </details>
 
 
-## Photometry:
+## Photometry:<a name="photometry"></a>
 
 
-### Description:
+### Description:<a name="photometry-description"></a>
 
 In the context of our studies on asteroids from the main belt, we have used the various functions of Steroid to design our own photometric software capable of automatic or semi-automatic processing. With this new tool, we have significantly increased our ability to produce light curves. This software is included in Steroid in the photometry.py file. In this section, we will show how to use it.
 
@@ -592,18 +613,18 @@ In the context of our studies on asteroids from the main belt, we have used the 
 
   <summary> 
     
-  ### Methods:
+  ### Methods:<a name="photometry-methods"></a>
   
   </summary>
 
 
-**Constructor:**
+**Constructor:**<a name="photometry-methods-constructor"></a>
 
 ***Photometry(detector = None)***
 
 Photometry take only one optional paramters of type (Detector). Why optional? because *Photometry* also include some functions to save photometry but also some function to load. Indeed if users want to rework on some lightcurves already processed they don't need to redo all the work. *Photometry* can reload previous lightcurves. In this kind of situation, user don't need any *Detector* as the photometry was already done. He just need to build an empty *Photometry* object and use the method ***readCsv(path)***.
 
-**Methods:**
+**Methods:** <a name="photometry-methods-methods"></a>
 
 ***start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)***
 
@@ -675,7 +696,7 @@ Photometry take only one optional paramters of type (Detector). Why optional? be
 
   <summary> 
     
-  ### How to use ?
+  ### How to use ? <a name="photometry-howtouse"></a>
   
   </summary>
 
