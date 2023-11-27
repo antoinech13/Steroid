@@ -2,7 +2,7 @@
 
 Steroid is a Python package dedicated to helping users develop their own automatic or semi-automatic procedures to correct frames and/or perform photometry.
 
-  ## Summary
+  ## Table of contents
   1. [Code Structur](#code-structure)
   2. [Classes Description](#classes-description)
      1. [Corrector](#corrector)
