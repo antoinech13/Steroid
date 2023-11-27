@@ -1,6 +1,6 @@
 # Steroid
 
-Steroid is a python package dedicated to help users to developpe their own automatic or semi-automatic procedure in way to correct frame and/or to performe photometry.
+Steroid is a Python package dedicated to helping users develop their own automatic or semi-automatic procedures to correct frames and/or perform photometry.
 
   ## Summary
   1. [Code Structur](#code-structure)
@@ -43,7 +43,7 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
   ## Classes Description <a name="classes-description"></a>
 
-  in this section, we will details all classes of the code and we will details some methods that could be usefull for users
+  In this section, we will detail all classes of the code, and we will provide details on some methods that could be useful for users.
 
   <details>
 
@@ -56,7 +56,9 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
   **Description:** <a name="corrector-description"></a>
 
-  Astronomical images from the same sequence are rarely aligned with each other. It is common to observe, at best, a drift in both the x and y directions between each image, and at worst, a field rotation. This misalignment can have several origins, but as the  main cause, we can note the type of telescope mount (equatorial or azimuthal), as well as the quality of the mechanics, the presence or absence of guiding, the alignment, a meridian flip, etc. The "Corrector" class is therefore aimed at estimating the drift and the rotation angle between each image in the same sequence. It also provides several functionalities to the user, allowing either simple position correction or direct image correction. In the case of photometric studies, it is preferable not to correct the images directly. Indeed, due to the discrete nature of an image, a rotation of it will introduce undesirable artifacts in the image. In the case of an amateur who simply wants to do astrophotography, it is possible to directly correct the image and apply interpolation to obtain an image without visible artifacts.
+  Astronomical images from the same sequence are rarely aligned with each other. It is common to observe, at best, a drift in both the x and y directions between each image, and at worst, a field rotation. This misalignment can have several origins, but the main causes include the type of telescope mount (equatorial or azimuthal), the quality of the mechanics, the presence or absence of guiding, the alignment, a meridian flip, etc.
+  
+The "Corrector" class is therefore designed to estimate the drift and rotation angle between each image in the same sequence. It also provides several functionalities to the user, allowing for either simple position correction or direct image correction. In the case of photometric studies, it is preferable not to correct the images directly. Indeed, due to the discrete nature of an image, a rotation will introduce undesirable artifacts. For amateur astronomers interested in astrophotography, it is possible to directly correct the image and apply interpolation to obtain an image without visible artifacts.
 
   **Constructor:** <a name="corrector-constructor"></a>
   
@@ -125,26 +127,26 @@ Steroid is a python package dedicated to help users to developpe their own autom
     
   ***medDrif(idx):***
 
-  - description: drift is estimated between all stars detected. this function return the median value of the image at idx
+  - description: drift is estimated between all stars detected. this function return the median value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
   - input: (INT) idx of image in the sequence
   - oupt: (array) 2d arry of drift in both axis
 
   ***avgDrif(idx):***
 
-  - description: drift is estimated between all stars detected. this function return the average value of the image at idx
+  - description: drift is estimated between all stars detected. this function return the average value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
   - input: (INT) idx of image in the sequence
   - oupt: (array) 2d arry of drift in both axis
 
   
    ***medAng(idx):***
 
-  - description: angle is estimated between all stars detected. this function return the median value of the image at idx
+  - description: angle is estimated between all stars detected. this function return the median value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
   - input: (INT) idx of image in the sequence
   - oupt: (FLOAT) angle of rotation
 
   ***avgAng(idx):***
 
-  - description: angle is estimated between all stars detected. this function return the average value of the image at idx
+  - description: angle is estimated between all stars detected. this function return the average value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
   - input: (INT) idx of image in the sequence
   - oupt: (FLOAT) angle of rotation
 
@@ -194,7 +196,7 @@ Steroid is a python package dedicated to help users to developpe their own autom
 
 **Description:** <a name="detector-description"></a>
 
-This class is dedicated to detect moving object. it's internaly stor a list of moving objects position and and other list of their speed along x and y axis. with inital poistions and speed, it's easy to determine the position of moving objects on each frames.
+This class is dedicated to detecting moving objects. Internally, it stores a list of the positions of moving objects and another list of their speeds along the x and y axes. With initial positions and speeds, it becomes easy to determine the position of moving objects in each frame.
 
 
 **Constructor:** <a name="detector-constructor"></a>
@@ -264,7 +266,7 @@ this section is dedicated to talk about some classes store in the file data_stru
 
 **Description:** <a name="datastruct-triangle-description"></a>
 
-This class store 3 stars and represent a triangle. this class overload the addition, substraction, division, multiplication, comparaison et also \_\_str\_\_
+This class stores three stars and represents a triangle. The class overloads addition, subtraction, division, multiplication, comparison operations and \_\_str\_\_ as well.
 
 **Constructor:**<a name="datastruct-triangle-constructor"></a>
 
@@ -374,7 +376,7 @@ this class store list of images path from a same sequence
 
 **Constructor:**<a name="datastruct-seqmanager-constructor"></a>
 
-***SeqManager(seq):"""
+***SeqManager(seq):***
 
 seq is just a list of path of raw images (STRING)
 
