@@ -691,6 +691,11 @@ Photometry take only one optional paramters of type (Detector). Why optional? be
 - description: display one of the first image of the sequence and show asteroids position at the begining and at the end of the sequence, plus boxes vertices, plus all object detected inside the boxe (BUT NOT ASTEROIDS)
 - input: (FLOAT) ofs: offset add to treshold to detect objects. To debug star passages, should be identic to the starPassageOfs parameter of the *start* method.
 
+***log(path, name = "log.txt)***
+
+- description: save a log.txt file containing informations on images not took into account because of bad detection, FWHM computed on each images and also images where star passages were detected.
+- input: (STRING) path of the directory (exemple: "/my/dir/"), (STRING) name of the file. by default it is set to "log.txt"
+
 </details>
 
 
@@ -768,7 +773,7 @@ On the other hand, ***findAsteroid*** is really sensityve to the data quality an
 
 **Fourth step**
 
-The final step is to build an object *Photometry* and to launch the photometric processe.
+The next step is to build an object *Photometry* and to launch the photometric processe.
 
     phot = Photometry(d)
     phot.start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)
@@ -780,6 +785,23 @@ The final step is to build an object *Photometry* and to launch the photometric 
 **maxVal** correspond to the maximum value that reference stars automaticly select should not overstep.
 
 **starPassageOfs** have the same function as **treshOnReduced** for objects and methodes dedicated to detect objects. This one is dedicated to stars Passages detection. It's, by default, set to 15000, which detect only bright stars but can be set much lower to detect fainter stars.
+
+**Fifth step:**
+
+As the photometry is done, the next step is to save results. To save plots, when a plot is done using ***plotDif***, a image of it can be save using the button on the window of the plot.
+To save the data, the best function is probably ***ToCsv*** which will save a csv file containing all infomations about the photometry, plus, information on stars passages if detected.
+The CSV file could be use as a backup using the function ***readCsv*** which will load in a **Photometry** the photometry previously done. 
+The function ***log*** will build a txt file containing additional informations.
+
+
+    phot.toCsv("/path/of/your/directory/myCsv.csv") #save CSV file
+
+in an other script (or in the same), to reload a CSV file:
+
+    phot = Photometry()  # this line is only needed if you didn't build any Photometry object before (in a new script for exemple)
+                         # no need detector object as here we are just loading previous photometry. 
+                         
+    phot.readCsv("/path/of/your/directory/myCsv.csv")
 
 
 
@@ -830,8 +852,17 @@ phot = Photometry(d)
 phot.start(nbOfStars = 3, center = True, maxVal = 30000, starPassageOfs = 15000)
 
 phot.plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5)
-
+phot.toCsv("/path/of/your/directory/myCsv.csv")
  ~~~
+
+if loading is need in another file:
+
+    from photometry import Photometry
+
+    phot = Photometry()  # this line is only needed if you didn't build any Photometry object before (in a new script for exemple)
+                         # no need detector object as here we are just loading previous photometry. 
+                         
+    phot.readCsv("/path/of/your/directory/myCsv.csv")
 
 **Caution:** in case where users use semi-automatic procedures, the selection on images are done with the left click and when selection is finish press the right click.
 
