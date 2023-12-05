@@ -1,6 +1,6 @@
 # Steroid
 
-Steroid is a Python package dedicated to helping users develop their own automatic or semi-automatic procedures to correct frames and/or perform photometry.
+Steroid is a Python package designed to assist users in creating their own automated or semi-automated procedures for correcting frames and/or conducting photometry. It is tailored to facilitate the development of efficient workflows in these domains.
 
   ## Table of contents
   1. [Code Structur](#code-structure)
@@ -38,13 +38,14 @@ Steroid is a Python package dedicated to helping users develop their own automat
      1. [Description](#photometry-description)
      2. [Methods](#photometry-methods)
      3. [How to use](#photometry-howtouse)
-  ## Code Structur <a name="code-structure"></a>
+ 
+##Code Structure <a name="code-structure"></a>
+
+##Classes Description <a name="classes-description"></a>
 
 
-  ## Classes Description <a name="classes-description"></a>
-
-  In this section, we will detail all classes of the code, and we will provide details on some methods that could be useful for users.
-
+  In this section, we will elaborate on all the classes within the code, offering insights into their functionalities. Additionally, we will provide details on certain methods that may prove useful for users.
+  
   <details>
 
   <summary id="corrector"> 
@@ -56,18 +57,19 @@ Steroid is a Python package dedicated to helping users develop their own automat
 
   **Description:** <a name="corrector-description"></a>
 
-  Astronomical images from the same sequence are rarely aligned with each other. It is common to observe, at best, a drift in both the x and y directions between each image, and at worst, a field rotation. This misalignment can have several origins, but the main causes include the type of telescope mount (equatorial or azimuthal), the quality of the mechanics, the presence or absence of guiding, the alignment, a meridian flip, etc.
   
-The "Corrector" class is therefore designed to estimate the drift and rotation angle between each image in the same sequence. It also provides several functionalities to the user, allowing for either simple position correction or direct image correction. In the case of photometric studies, it is preferable not to correct the images directly. Indeed, due to the discrete nature of an image, a rotation will introduce undesirable artifacts. For amateur astronomers interested in astrophotography, it is possible to directly correct the image and apply interpolation to obtain an image without visible artifacts.
+  Astronomical images from the same sequence are seldom perfectly aligned with each other. It is common to observe, at the very least, a drift in both the x and y directions between each image, and at worst, a field rotation. This misalignment can stem from       various sources, with primary factors including the type of telescope mount (equatorial or azimuthal), mechanical quality, presence or absence of guiding, alignment issues, meridian flips, and more.
+
+  The "Corrector" class is specifically crafted to estimate the drift and rotation angle between each image in a given sequence. It offers several functionalities to the user, allowing for either a straightforward position correction or direct image correction.   In the context of photometric studies, it is advisable not to correct the images directly. This is because, due to the discrete nature of an image, rotation can introduce undesirable artifacts. For amateur astronomers engaged in astrophotography, there is an    option to directly correct the image and apply interpolation to produce an image without visible artifacts.
 
   **Constructor:** <a name="corrector-constructor"></a>
   
   ***Corrector(seqManager, flatSeq = None, biasSeq = None, darkSeq = None, exposurKey = None):***
    
-  The constructor of the class *Corrector* take, as input: 
-  
-  -  (mandotory) a sequence of images (see the data structure SeqManager)
-  -  (optional) a list of path (list of string) for the flat sequence, a list of path (list of string) for the bias sequence, a list of path (list of string) for the dark sequence and a string which correspond to the fit header key of the exposure (usually exposure is store in fits header under the key EXPOSURE or EXPTIME)
+  The constructor of the Corrector class takes the following inputs:
+
+  -  (mandatory) A sequence of images (refer to the data structure SeqManager).
+  -  (optional) A list of paths (string list) for the flat sequence, a list of paths (string list) for the bias sequence, a list of paths (string list) for the dark sequence, and a string corresponding to the FITS header key for the exposure (usually, exposure       is stored in the FITS header under the key EXPOSURE or EXPTIME).
 
 
   **Methods:** <a name="corrector-methods"></a>
@@ -75,112 +77,114 @@ The "Corrector" class is therefore designed to estimate the drift and rotation a
   
    ***getImgShape(idx = 0, idx_HDU = 0):*** 
  
-  -  description: return the shape of an image of the sequence
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (tuple)
+  -  Description: Returns the shape of an image in the sequence.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (tuple)
 
   ***getImgCenter(idx_img = 0, idx_HDU = 0):***
 
-  -  description: return the coordinate of the center of an image of the sequence
-  -  input: (INT) idx_img of image in the sequence, (INT) idx_HDU in the image
-  -  return: (tuple)
+  -  Description: Returns the coordinates of the center of an image in the sequence.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (tuple)
 
   ***getImg(idx = 0):***
 
-  -  description: return an object of type Fit (see data structure Fit)
-  -  input: (INT) idx of image in the sequence
-  -  return: (Fit)
+  -  Description: Returns an object of type Fit (refer to the data structure Fit).
+  -  Input: (INT) Index of the image in the sequence.
+  -  Return: (Fit)
 
   ***getData(idx = 0, HDU = 0)***
 
-  -  desciption: return the data of the raw image.
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (numpy.array)
+  -  Description: Returns the data of the raw image.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (numpy.array)
 
   ***getReducedData(idx = 0, HDU = 0)***
-
-  -  desciption: return the data of the reduced image.
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (numpy.array)
+  
+  -  Description: Returns the data of the reduced image.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (numpy.array)
   
   ***getHeader(idx = 0, HDU = 0):***
   
-  -  desciption: return the header of the image at idx in the sequence.
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (STRING)
+  -  Description: Returns the header of the image at the specified index in the sequence.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (STRING)
 
   ***histogram(idx = 0 , idx_HDU = 0):***
   
-  -  desciption: return the histogram of the image at idx in the sequence and at the HDU idx.
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (numpy.array) histogram, (numpy.array) bin edgesarray (see numpy.histogram)
+  -  Description: Returns the histogram of the image at the specified index in the sequence and at the specified HDU index.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (numpy.array) Histogram, (numpy.array) Bin edges (refer to numpy.histogram)
 
   ***getStarsListOfImg(idx):***
 
-  -  desciption: return the position of stars detected at the iamge idx.
-  -  return: (numpy.array) stars position
+  -  Description: Returns the positions of stars detected in the image at the specified index.
+  -  Return: (numpy.array) Star positions
 
   ***computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)***
 
-  -  description: compute the drift and the angle of rotation for each images of the sequence and store them in two list of lengh = to the sequence lengh
-  -  input: (FLOAT) a offset that can be add to adjust treshold value. (BOOLEAN) if the treshold should be estimated on reduced images or raw
+  -  Description: Computes the drift and the angle of rotation for each image in the sequence and stores them in two lists with lengths equal to the sequence length.
+  -  Input: (FLOAT) An offset that can be added to adjust the threshold value. (BOOLEAN) Indicates whether the threshold should be estimated on reduced images or raw images.
     
   ***medDrif(idx):***
 
-  - description: drift is estimated between all stars detected. this function return the median value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
-  - input: (INT) idx of image in the sequence
-  - oupt: (array) 2d arry of drift in both axis
+  -  Description: Drift is estimated between all detected stars. This function returns the median value of the image at the specified index. **NEEDS TO EXECUTE ***computeImagesCorrection*** FIRST**.
+  -  Input: (INT) Index of the image in the sequence.
+  -  Output: (array) 2D array of drift in both axes.
+
 
   ***avgDrif(idx):***
 
-  - description: drift is estimated between all stars detected. this function return the average value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
-  - input: (INT) idx of image in the sequence
-  - oupt: (array) 2d arry of drift in both axis
+  -  Description: Drift is estimated between all detected stars. This function returns the average value of the image at the specified index. **NEEDS TO EXECUTE ***computeImagesCorrection*** FIRST**.
+  -  Input: (INT) Index of the image in the sequence.
+  -  Output: (array) 2D array of drift in both axes.
 
   
    ***medAng(idx):***
 
-  - description: angle is estimated between all stars detected. this function return the median value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
-  - input: (INT) idx of image in the sequence
-  - oupt: (FLOAT) angle of rotation
+  -  Description: Angle is estimated between all detected stars. This function returns the median value of the image at the specified index. **NEEDS TO EXECUTE ***computeImagesCorrection*** FIRST**.
+  -  Input: (INT) Index of the image in the sequence.
+  -  Output: (FLOAT) Angle of rotation.
 
   ***avgAng(idx):***
 
-  - description: angle is estimated between all stars detected. this function return the average value of the image at idx. **NEED TO EXECUTE ***computeImagesCorrection*** FIRST**
-  - input: (INT) idx of image in the sequence
-  - oupt: (FLOAT) angle of rotation
+  -  Description: Angle is estimated between all detected stars. This function returns the average value of the image at the specified index. **NEEDS TO EXECUTE ***computeImagesCorrection*** FIRST**.
+  -  Input: (INT) Index of the image in the sequence.
+  -  Output: (FLOAT) Angle of rotation.
 
   ***correctStarsFromRot(arrayToCorrect, idx, coefMultAngle = -1)***
 
-  -   description: according to a given array of positions, this function will correct each position according to the drif and angle of the image idx. The coefMultAngle take 1 or -1 and only give the direction of rotation. (different value frome 1 or -1 will influence the angle of rotation)
-  -   input: (2d array) array of position to correct, (INT) idx of image for which to correct, (INT) coeficient multiply to the angle
-  -   return: (2d array) new position of objects located at positions arrayToCorrect, according to the image idx drift and angle.
+  -  Description: According to a given array of positions, this function corrects each position based on the drift and angle of the image at the specified index. The coefficient coefMultAngle takes values of 1 or -1, determining the       direction of rotation. Different values from 1 or -1 will influence the angle of rotation.
+  -  Input: (2D array) Array of positions to correct, (INT) Index of the image to correct for, (INT) Coefficient to multiply to the angle.
+  -  Return: (2D array) New positions of objects located at positions in arrayToCorrect, adjusted according to the drift and angle of the image at the specified index.
 
   ***correctedImg(idx = 0, HDU_idx = 0):***
 
-  -  desciption: return the image corrected
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (numpy.array) the corrected image
+  -  Description: Returns the corrected image.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (numpy.array) The corrected image.
 
   ***getSuperImg(idx_ims = None, HDU_idx = 0):***
 
-  -  desciption: return the average combination of all images of the sequence (after correction)
-  -  input: (INT) idx of image in the sequence, (INT) idx_HDU in the image
-  -  return: (numpy.array) the combined image
+  -  Description: Returns the average combination of all images in the sequence after correction.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the HDU in the image.
+  -  Return: (numpy.array) The combined image.
 
   ***rejectBadData():***
 
-  - description: reject all data where drift and/or angle was not found
+  -  Description: Rejects all data where the drift and/or angle were not found.
 
  ***imshowstar(idx = 0):***
 
- -  description: method to display image at idx and show objects detected
- -  input: (INT) idx of the image in the sequence
+  -  Description: Method to display the image at the specified index and show detected objects.
+  -  Input: (INT) Index of the image in the sequence.
  
-***checkPatterns(idxOfImage = 0, patidx = None):***
+ ***checkPatterns(idxOfImage = 0, patidx = None):***
 
--  description: method to display image idx and, if patterns idx (patidx) set to None, will show all patterns. If patterns idx set to a value, will only show the pattern selected
--  input: (INT) idxOfImage image idex in the sequence. (INT) patidx index of the patterns of all patterns of the image. If set to None, will show all patterns
+  -  Description: Method to display the image at the specified index. If the pattern index (patidx) is set to None, it will show all patterns. If set to a specific value, it will only display the selected pattern.
+  -  Input: (INT) Index of the image in the sequence, (INT) Index of the pattern. If set to None, it will show all patterns.
+
 
  </details id="detector">
 
