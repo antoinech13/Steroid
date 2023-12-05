@@ -39,9 +39,9 @@ Steroid is a Python package designed to assist users in creating their own autom
      2. [Methods](#photometry-methods)
      3. [How to use](#photometry-howtouse)
  
-##Code Structure <a name="code-structure"></a>
+## Code Structure <a name="code-structure"></a>
 
-##Classes Description <a name="classes-description"></a>
+## Classes Description <a name="classes-description"></a>
 
 
   In this section, we will elaborate on all the classes within the code, offering insights into their functionalities. Additionally, we will provide details on certain methods that may prove useful for users.
