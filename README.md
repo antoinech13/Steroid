@@ -3,7 +3,7 @@
 Steroid is a Python package designed to assist users in creating their own automated or semi-automated procedures for correcting frames and/or conducting photometry. It is tailored to facilitate the development of efficient workflows in these domains.
 
   ## Table of contents
-  1. [Code Structur](#code-structure)
+  1. [Code Structure](#code-structure)
   2. [Classes Description](#classes-description)
      1. [Corrector](#corrector)
         1. [Description](#corrector-description)
@@ -200,63 +200,63 @@ Steroid is a Python package designed to assist users in creating their own autom
 
 **Description:** <a name="detector-description"></a>
 
-This class is dedicated to detecting moving objects. Internally, it stores a list of the positions of moving objects and another list of their speeds along the x and y axes. With initial positions and speeds, it becomes easy to determine the position of moving objects in each frame.
+This class is designed for detecting moving objects. It internally maintains a list of positions for these objects and another list for their speeds along both the x and y axes. With the provision of initial positions and speeds, the task of determining the positions of moving objects in each frame becomes straightforward.
 
 
 **Constructor:** <a name="detector-constructor"></a>
 
 ***Detector(imageSeq, flatSeq = None, biasSeq = None, darkSeq = None):***
 
- The constructor of the class *Detector* take, as input: 
-  
-  -  (mandotory) a list of path (list of string) of the main image sequence
-  -  (optional) a list of path (list of string) for the flat sequence, a list of path (list of string) for the bias sequence and a list of path (list of string) for the dark sequence.
+  The constructor of the Detector class takes the following inputs:
+
+  -  (mandatory) A list of paths (string list) for the main image sequence.
+  -  (optional) A list of paths (string list) for the flat sequence, a list of paths (string list) for the bias sequence, and a list of paths (string list) for the dark sequence.
 
 **Methods:** <a name="detector-methods"></a>
 
 ***computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)***
 
-  -  description: call the function computeImagesCorrection from *Corrector* than reject all bad data (without drift or/and angle values detected)
-  -  input: (FLOAT) a offset that can be add to adjust treshold value. (BOOLEAN) if the treshold should be estimated on reduced images or raw
+  -  Description: Calls the function computeImagesCorrection from the Corrector class and subsequently rejects all data with missing drift and/or angle values.
+  -  Input: (FLOAT) An offset that can be added to adjust the threshold value. (BOOLEAN) Indicates whether the threshold should be estimated on reduced images or raw images.
 
 ***findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2):***
 
-  -  description: will find slow moving object based on method comparing present object or not from one of the first and one of the last frame of the sequence. To help to not overdetect to much, this algorythm is helped by a convolutional neural network based on AlexNet. This method will feed a list of moving object position on the initial frame and a list a object speed along x and y axis.
-  -  input: (FLOAT) a offset that can be add to adjust treshold value. (BOOLEAN) if the treshold should be estimated on reduced images or raw. (INT) epsilon which correspond to the tolerence
+  -  Description: Finds slow-moving objects based on a method that compares the presence of an object from one of the first frames to one of the last frames in the sequence. To prevent excessive detection, this algorithm is assisted by a convolutional neural network based on AlexNet. The method store a list of moving object positions on the initial frame and a list of object speeds along the x and y axes.
+  -  Input: (FLOAT) An offset that can be added to adjust the threshold value. (BOOLEAN) Indicates whether the threshold should be estimated on reduced images or raw images. (INT) Epsilon, which corresponds to the tolerance.
 
 ***fasterAst():***
 
-  - description: return the index of the faster moving object
-  - return: (INT) the index of the faster asteroid in the list
+  -  Description: Returns the index of the fastest moving object.
+  -  Return: (INT) The index of the fastest asteroid in the list.
 
 ***slowestAst():***
 
-  - description: return the index of the slowest moving object
-  - return: (INT) the index of the slowest asteroid in the list
+  -  Description: Returns the index of the slowest moving object.
+  -  Return: (INT) The index of the slowest asteroid in the list.
 
 ***getAstPositionAtImg(idx):***
 
-  - description: return the position of moving objects on the image at the idx
-  - input: (INT) idex of the image where to get positions
-  - return: (numpy.array) array of moving objects position
+  -  Description: Returns the position of moving objects in the image at the specified index.
+  -  Input: (INT) Index of the image from which to retrieve positions.
+  -  Return: (numpy.array) Array of moving objects positions.
 
 ***nofa():***
 
-  - description: return the number of moving object detected
-  - return: (INT) number of moving object detected
+  -  Description: Returns the number of detected moving objects.
+  -  Return: (INT) Number of detected moving objects.
 
 ***astSpeed(idx = 0):***
 
-  - description: return the speed of moving objects on the image at the idx
-  - input: (INT) idex of the image where to get positions
-  - return: (numpy.array) array of speed on x and y axis of moving objects
+  -  Description: Returns the speed of moving objects in the image at the specified index.
+  -  Input: (INT) Index of the image from which to retrieve speeds.
+  -  Return: (numpy.array) Array of speeds on the x and y axes of moving objects.
 
 
 </details>
 
 ## Data structure description: <a name="datastruct"></a>
 
-this section is dedicated to talk about some classes store in the file data_structurs. 
+This section is dedicated to discussing some classes stored in the file "data_structures.py"
 
 <details>
 
@@ -270,55 +270,54 @@ this section is dedicated to talk about some classes store in the file data_stru
 
 **Description:** <a name="datastruct-triangle-description"></a>
 
-This class stores three stars and represents a triangle. The class overloads addition, subtraction, division, multiplication, comparison operations and \_\_str\_\_ as well.
+This class stores information about three stars and represents a triangle. It overloads various operations, including addition, subtraction, division, multiplication, and comparison operations. Additionally, it implements the \_\_str\_\_ method for string representation.
 
 **Constructor:**<a name="datastruct-triangle-constructor"></a>
 
 ***Triangle(s1, s2, s3, eps = 2):***
 
-s1, s2 and s2 are (numpy.array). eps is a tolerence used in the \_\_eq\_\_ to estimate if two triangles are equal or not
+S1, s2, and s3 are represented as numpy arrays. The eps parameter is a tolerance used in the \_\_eq\_\_ method to determine whether two triangles are considered equal or not.
 
 
 **Methods:**<a name="datastruct-triangle-methods"></a>
 
 ***d1():***
 
--  description: return the eucledian distance between s1 and s2
--  return: (FLOAT) distance between s1 and s2
+-  Description: Returns the Euclidean distance between s1 and s2.
+-  Return: (FLOAT) Distance between s1 and s2.
 
 ***d2():***
 
--  description: return the eucledian distance between s1 and s3
--  return: (FLOAT) distance between s1 and s3
+-  Description: Returns the Euclidean distance between s1 and s3.
+-  Return: (FLOAT) Distance between s1 and s3.
 
-  
 ***d3():***
 
--  description: return the eucledian distance between s2 and s3
--  return: (FLOAT) distance between s2 and s3
+-  Description: Returns the Euclidean distance between s2 and s3.
+-  Return: (FLOAT) Distance between s2 and s3.
 
 ***buildVect():***
 
-- desciption: build tree vector v1, v2 and v3 between (s1, s2) , (s1, s3) and (s2, s3)
-- return (numpy.array, numpy.array, numpy.array) three vector v1, v2 and v3
+-  Description: Builds tree vectors v1, v2, and v3 between (s1, s2), (s1, s3), and (s2, s3).
+-  Return: (numpy.array, numpy.array, numpy.array) Three vectors v1, v2, and v3.
 
 ***getRotationAngle(other):***
 
--  description: compute the angle between the triangle and an other one. Cauntion!!! this method do not check if both triangles are the same
--  input: (Triangle) an other triangle
--  return: (FLOAT) the angle of rotation between both tirangles
+-  Description: Computes the angle between the triangle and another one. Caution! This method does not check if both triangles are the same.
+-  Input: (Triangle) Another triangle.
+-  Return: (FLOAT) The angle of rotation between both triangles.
 
 
 ***computeDistance(other):***
 
--  description: return the mean distance between the triangle and an other
--  input: (Triangle) and othee triangle
--  return: (numpy.array) mean distance in x and y of both triangles
+-  Description: Returns the mean distance between the triangle and another one.
+-  Input: (Triangle) Another triangle.
+-  Return: (numpy.array) Mean distance in x and y of both triangles.
 
 ***correctRot(angle, center):***
 
-- description: rotate the position of s1, s2 and s3 of an angle according to a center of rotation
-- input: (FLOAT) angle of rotation, (numpy.array) position of the center of rotation
+-  Description: Rotates the positions of s1, s2, and s3 by an angle around a specified center of rotation.
+-  Input: (FLOAT) Angle of rotation, (numpy.array) Position of the center of rotation.
 
 </details>
 
@@ -334,33 +333,34 @@ s1, s2 and s2 are (numpy.array). eps is a tolerence used in the \_\_eq\_\_ to es
 
 **Desciption:**<a name="datastruct-pattern-description"></a>
 
-this class store Triangles as a pattern. the addition, substraction, multiplication, division, comparaison and \_\_str\_\_ are overloaded
+This class stores triangles as a pattern. It overloads addition, subtraction, multiplication, division, comparison operations, and the \_\_str\_\_ method.
 
 **Constructor**<a name="datastruct-pattern-constructor"></a>
 
 ***Pattern(t1, t2, t3, t4, t5):***
 
-t1, t2, t3, t4 and t5 are Triangle object (see the datastructure class *Triangle*)
+
+t1, t2, t3, t4, and t5 are objects of the Triangle class (refer to the data structure class *Triangle*).
 
 **Methods:**<a name="datastruct-pattern-methods"></a>
 
 ***computeDistance(other):***
 
--  description: compute the mean distance between two Pattern
--  input: (Pattern) an other pattern to compute distance
--  return: (numpy.array) mean distance in x and y between the two pattern
+-  Description: Computes the mean distance between two patterns.
+-  Input: (Pattern) Another pattern to compute the distance.
+-  Return: (numpy.array) Mean distance in x and y between the two patterns.
 
 ***computeAngle(other):***
 
-- description: compute the angle of rotation between two patterns
-- input: (Pattern) and other pattern
-- return: (FLOAT) angle of rotation between the two pattern
+-  Description: Computes the angle of rotation between two patterns.
+-  Input: (Pattern) Another pattern.
+-  Return: (FLOAT) Angle of rotation between the two patterns.
 
 
 ***correctRot(angle, center):***
 
--  description: rotate t1, t2, t3, t4 and t5 of an angle according to a center of rotation
--  input: (FLOAT) angle of rotation, (numpy.array) position of the center of rotation
+-  Description: Rotates t1, t2, t3, t4, and t5 by a specified angle around a center of rotation.
+-  Input: (FLOAT) Angle of rotation, (numpy.array) Position of the center of rotation.
 
 </details>
 
@@ -376,91 +376,91 @@ t1, t2, t3, t4 and t5 are Triangle object (see the datastructure class *Triangle
 
 **Description:**<a name="datastruct-seqmanager-description"></a>
 
-this class store list of images path from a same sequence
+This class stores a list of image paths from the same sequence.
 
 **Constructor:**<a name="datastruct-seqmanager-constructor"></a>
 
 ***SeqManager(seq):***
 
-seq is just a list of path of raw images (STRING)
+The seq attribute represents a list of paths to raw images (STRING) in this class.
 
 **Methods:**<a name="datastruct-seqmanager-methods"></a>
 
 ***getPath(idx):***
 
--  description: return the path of the image at idx
--  input: (INT) idx of the image of interest in the sequence
--  return: (STRING) return the path of the image
+-  Description: Returns the path of the image at the specified index.
+-  Input: (INT) Index of the image of interest in the sequence.
+-  Return: (STRING) The path of the image.
 
 ***getFileName(idx):***
 
--  description: return the name of the image at idx
--  input: (INT) the idx of the image of interest in the sequence
--  return: (STRING) the name of the image
+-  Description: Returns the name of the image at the specified index.
+-  Input: (INT) Index of the image of interest in the sequence.
+-  Return: (STRING) The name of the image.
 
 ***getImg(idx = 0):***
 
--  description: return on object *Fit* of the image at idx
--  input: (INT) idx of the image of interest
--  return: (Fit) a data structure of type Fit
+-  Description: Returns an object of type Fit for the image at the specified index.
+-  Input: (INT) Index of the image of interest.
+-  Return: (Fit) A data structure of type Fit.
 
 ***getHDU(idx = 0, HDU = 0):***
 
--  description: return the HDU of the image idx
--  input: (INT) idx of the image. (INT) HDU index
--  return (astropy.io.fits.hdu.image.PrimaryHDU) HDU of the image idx
+-  Description: Returns the HDU (Header Data Unit) of the image at the specified index.
+-  Input: (INT) Index of the image, (INT) HDU index.
+-  Return: (astropy.io.fits.hdu.image.PrimaryHDU) HDU of the image at the specified index.
 
 ***getInfo(idx = 0):***
 
-- description: display info of the image at idx
-- input: (INT) idx of the image of interest
+-  Description: Displays information about the image at the specified index.
+-  Input: (INT) Index of the image of interest.
 
 ***getHeader(idx = 0, HDU = 0):***
 
--  description: retunr the header at the HDU and at the image idx
--  input: (INT) idx of image, (INT) index of the HDU of the image at idx
--  return: (astropy.io.fits.header.Header) header of the image idx at the hdu
+-  Description: Returns the header at the specified HDU index for the image at the given index.
+-  Input: (INT) Index of the image, (INT) Index of the HDU of the image at the specified index.
+-  Return: (astropy.io.fits.header.Header) Header of the image at the specified HDU index.
 
 ***getExpo(idx, key, HDU = 0):***
 
--  description: return the exposure from the header of the image at idx and hdu. the exposure is determine according to the key
--  input: (INT) idx of the image of interest, (STRING) key in the header corresponding to the exposure, (INT) hdu index
--  return: (FLOAT) exposure
+-  Description: Returns the exposure from the header of the image at the specified index and HDU. The exposure is determined according to the provided key.
+-  Input: (INT) Index of the image of interest, (STRING) Key in the header corresponding to the exposure, (INT) HDU index.
+-  Return: (FLOAT) Exposure.
 
 ***getData(idx = 0, idx_HDU = 0):***
 
--  description: return the image idx and idx of hdu as array
--  input: (INT) index of the image of interest, (INT) idex of HDU
--  return: (numpy.array) the image
+-  Description: Returns the image at the specified index and HDU as an array.
+-  Input: (INT) Index of the image of interest, (INT) Index of the HDU.
+-  Return: (numpy.array) The image.
 
 ***getCenter(idx_img = 0, idx_HDU = 0):***
 
--  description: return the center of an image at idx and of HDU
--  input: (INT) image idex, (INT) image HDU
--  return: (numpy.array) coordinate of the center of the image at idx and at hdu
+-  Description: Returns the center coordinates of an image at the specified index and HDU.
+-  Input: (INT) Image index, (INT) Image HDU.
+-  Return: (numpy.array) Coordinates of the center of the image at the specified index and HDU.
 
 ***getImgShape(idx = 0, idx_HDU = 0):***
 
--  description: return the shape of the image at idx and at hdu
--  intput: (INT) index of the image of interest. (INT) HDU index
--  return: (TUPLE) image shape
+-  Description: Returns the shape of the image at the specified index and HDU.
+-  Input: (INT) Index of the image of interest, (INT) HDU index.
+-  Return: (TUPLE) Image shape.
 
 ***getTime(key, forma, idx = 0, HDU = 0):***
 
--  description: get the time of the image at idx and hdu from the header using the key and forma. if in the header, the time is store as julian day, (exemple: JD=2458780) then key = JD and forma=JD. For more format, refere to Time.FORMATS from astropy.time
--  input: (STRING) key of the time in the header, (STRING) format of the time in the header (refere to Time.FORMATS from astropy.time), (INT) idx of the image, (INT) idx of HDU
--  return: (astropy.time.core.Time) time of the image
+-  Description: Gets the time of the image at the specified index and HDU from the header using the provided key and format. If the time is stored as Julian Day in the header (e.g., JD=2458780), set the key and format to JD. For more formats, refer to Time.FORMATS from astropy.time.
+-  Input: (STRING) Key of the time in the header, (STRING) Format of the time in the header (refer to Time.FORMATS from astropy.time), (INT) Index of the image, (INT) Index of the HDU.
+-  Return: (astropy.time.core.Time) Time of the image.
 
 ***pop(idx = -1):***
 
--  description: delete an image at the position idx from the sequence. by default idx is set to -1 so the last image is delete
--  input: (INT) idx of image to delete
+-  Description: Deletes an image at the specified index from the sequence. By default, if idx is set to -1, the last image is deleted.
+-  Input: (INT) Index of the image to delete. (Default: -1 to delete the last image.)
 
 ***histogram(idx = 0, idx_HDU = 0):***
 
--  description: return the histogram of the image idx and hdu at idx_hdu
--  input: (INT) index of the image of interest, (INT) idx of the HDU
--  return: (numpy.array) histogram, (numpy.array) bin edgesarray (see numpy.histogram) 
+-  Description: Returns the histogram of the image at the specified index and HDU.
+-  Input: (INT) Index of the image of interest, (INT) Index of the HDU.
+-  Return: (numpy.array) Histogram, (numpy.array) Bin edges (refer to numpy.histogram).
 
 </details>
 
@@ -474,29 +474,30 @@ seq is just a list of path of raw images (STRING)
 
 **Description:** <a name="datastruct-appertures-description"></a>
 
-this data structure is dedicated to manage appertures. It's take as input a 2D numpy.array of appertures positions with appertures sizes and can manage the photometry
+This data structure is dedicated to managing apertures. It takes as input a 2D numpy array of aperture positions with aperture sizes and can handle photometry.
 
 **Constructor:** <a name="datastruct-appertures-constructor"></a>
 
 ***Appertures(positions, idxOfStars = None, r = 3, ri = 6, re = 8):*** 
 
--  positions: 2D (NUMPY.ARRAY) of position of appertures of all objects. first rows should be targets and last rows should be reference stars for differential photometry if needed.
--  idxOfStars: (INT) index of the row in positions where references stars appertures positions are stores.
--  r: (FLOAT) inner radius of appertures
--  ri: (FLOAT) radius of the death area of appertures
--  re: (FLOAT) radius of the backgroud apperture
+- Positions: 2D numpy array of positions of apertures for all objects. The first rows should represent targets, and the last rows should represent reference stars for differential photometry if needed.
+  - `idxOfStars`: (INT) Index of the row in positions where the positions of reference stars' apertures are stored.
+  - `r`: (FLOAT) Inner radius of the apertures.
+  - `ri`: (FLOAT) Radius of the dead area of the apertures.
+  - `re`: (FLOAT) Radius of the background aperture.
 
 **Methods:** <a name="datastruct-appertures-methods"></a>
 
 ***photom(img, key, forma, center = False, exposure = None):***
 
--  desciption: perform the photometry and allow users to center the time at mid of exposure if time in the header is set at the beginning of exposure
--  input: - img: (FIT) FIT object of the image use for the photometry \
-  &emsp;&emsp;&ensp; - key: (STRING) Keyword of the time in the header \
-  &emsp;&emsp;&ensp; - forma: (STRING) format of the time in the header \
-  &emsp;&emsp;&ensp; -  center: (BOOLEAN) set to true to center the time in case if the time in header was took at the beginning of exposure. \
-  &emsp;&emsp;&ensp; -  exposure: (FLOAT) exposure time  
--  output : (astropy.table.table.QTable) resume of the photometry
+- Description: Perform the photometry and allow users to center the time at the midpoint of exposure if the time in the header is set at the beginning of exposure.
+- Input:
+  - `img`: (FIT) FIT object of the image used for photometry
+  - `key`: (STRING) Keyword of the time in the header
+  - `forma`: (STRING) Format of the time in the header
+  - `center`: (BOOLEAN) Set to true to center the time in case if the time in header was taken at the beginning of exposure
+  - `exposure`: (FLOAT) Exposure time
+- Output: (astropy.table.table.QTable) Resume of the photometry
   
 </details>
 
@@ -512,97 +513,96 @@ this data structure is dedicated to manage appertures. It's take as input a 2D n
 
   **Description:** <a name="datastruct-fit-description"></a>
 
-  this structure is dedicated to manage fit images. a lot of methods are also done to manage operation on images
+  This structure is dedicated to managing FIT images, and numerous methods are implemented to handle various operations on images.
 
   **Constructor:** <a name="datastruct-fit-constructor"></a>
 
   ***Fit(path, dark = 0, flat = 1, bias = 0, darkExp = None, exposurKey = None):***
 
-  -  path: (STRING) path of the image in the user's system
-  -  dark: (NUMPY.ARRAY) master dark
-  -  flat: (NUMPY.ARRAY) master flat
-  -  bias: (NUMPY.ARRAY) master bias
-  -  darkExp: (FLOAT) exposure of dark images
-  -  exposurKey: (STRIGN) the key in the header where exposure is store
+  -  `path`: (STRING) Path of the image in the user's system
+  -  `dark`: (NUMPY.ARRAY) Master dark
+  -  `flat`: (NUMPY.ARRAY) Master flat
+  -  `bias`: (NUMPY.ARRAY) Master bias
+  -  `darkExp`: (FLOAT) Exposure of dark images
+  -  `exposureKey`: (STRING) The key in the header where exposure is stored
 
   **Methods** <a name="datastruct-fit-methods"></a>
 
   ***getHDU(i = 0):***
 
-  -  description: get HDU of the image i
-  -  input: (INT) idx of the HDU to get
-  -  return: (astropy.io.fits.hdu.image.PrimaryHDU) 
-
+  -  Description: Get HDU of the image.
+  -  Input: (INT) Index of the HDU to get.
+  -  Return: (astropy.io.fits.hdu.image.PrimaryHDU)
+  
   ***getInfo():***
 
-  -  description: print information of the image
+  -  Description: Print information of the image.
 
   ***getHeader(HDU = 0):***
 
-  -  description: get the header of the HDU
-  -  input: (INT) DHU index
-  -  return: (astropy.io.fits.header.Header)
+  -  Description: Get the header of the HDU.
+  -  Input: (INT) HDU index.
+  -  Return: (astropy.io.fits.header.Header)
 
   ***getExposure(self, key, HDU = 0):***
 
-  -  description: get the exposure
-  -  input: (STRING) key in the header corresponding to the exposure, (INT) index of the HDU of interest
-  -  output: (FLOAT)
+  -  Description: Get the exposure.
+  -  Input: (STRING) Key in the header corresponding to the exposure, (INT) Index of the HDU of interest.
+  -  Output: (FLOAT)
 
   ***getTime(key, forma, HDU = 0):***
 
-  -  description: get the time from the header
-  -  input: (STRING) key in the header corresponding to the time, (STING) forma of thet time store in the header, (INT) index of the HDU of interest
-  -  output: (FLOAT)
+  -   Description: Get the time from the header.
+  -   Input: (STRING) Key in the header corresponding to the time, (STRING) Format of the time stored in the header, (INT) Index of the HDU of interest.
+  -   Output: (FLOAT)
 
   ***getData(idx_HDU = 0):***
 
-  -  description: get the image data as a matrice
-  -  input: (INT) idx of HDU of interest
-  -  output: (NUMPY.ARRAY) matrice of the image
+  -  Description: Get the image data as a matrix.
+  -  Input: (INT) Index of the HDU of interest.
+  -  Output: (NUMPY.ARRAY) Matrix of the image.
 
   ***getReducedData(HDU = 0):***
 
-  -  description: get the reduced image data as a matrice
-  -  input: (INT) idx of HDU of interest
-  -  output: (NUMPY.ARRAY) matrice of the reduced image
+  -  Description: Get the reduced image data as a matrix.
+  -  Input: (INT) Index of the HDU of interest.
+  -  Output: (NUMPY.ARRAY) Matrix of the reduced image.
 
   ***getCenter(idx_HDU = 0):***
 
-  -  description: return the center of the image
-  -  input: (INT) idx of the HDU of interest
-  -  output: (TUPLE)
+  -  Description: Return the center of the image.
+  -  Input: (INT) Index of the HDU of interest.
+  -  Output: (TUPLE)
 
   ***getShape(idx_HDU = 0):***
 
-  -  description: get the shape of the image
-  -  input: (INT) idx of the HDu of interest
-  -  output: (numpy.ndarray)
+  -  Description: Get the shape of the image.
+  -  Input: (INT) Index of the HDU of interest.
+  -  Output: (numpy.ndarray)
 
   ***getTresh(reduced = False, display = False):***
 
-  -  description: method to automaticly determine the best treshold value to binarize the image
-  -  input: (BOOLEAN) if set to true will evaluate treshold on reduced frame, (BOOLEAN) if set to true, will plot informations to help to debug
-  -  output: (FLOAT) treshold value 
-
+  -  Description: Method to automatically determine the best threshold value to binarize the image.
+  -  Input: (BOOLEAN) If set to true, will evaluate threshold on reduced frame. (BOOLEAN) If set to true, will plot information to help debug.
+  -  Output: (FLOAT) Threshold value.
 
   ***findStars(tresh = None, onReduced = False):***
 
-  -  description: find all object (not only stars) present on frames
-  -  input: (float) treshold value. If set to None, will be set to 1.5*median, (BOOLEAN) if set to true will find object on reduced frame
-  -  output: (NUMPY.ARRAY) x,y coordinates of object center in the frame
+  -  Description: Find all objects (not only stars) present on frames.
+  -  Input: (FLOAT) Threshold value. If set to None, will be set to 1.5 times the median. (BOOLEAN) If set to true, will find objects on reduced frame.
+  -  Output: (NUMPY.ARRAY) x, y coordinates of object centers in the frame.
 
   ***histogram(idx_HDU = 0):***
 
-  -  description: compute histogram of the HDU of interest
-  -  input: (INT) idx of HDU of interest
-  -  output: (TUPLE(NUMPY.ARRAY, NUMPY.ARRAY)) the first array correspond to the histogram and the second to the bin_edges (see https://numpy.org/doc/stable/reference/generated/numpy.histogram.html).
+  -  Description: Compute histogram of the HDU of interest.
+  -  Input: (INT) Index of the HDU of interest.
+  -  Output: (TUPLE(NUMPY.ARRAY, NUMPY.ARRAY)) The first array corresponds to the histogram, and the second to the bin_edges (see [numpy.histogram](https://numpy.org/doc/stable/reference/generated/numpy.histogram.html)).
 
   ***reducedHistogram(idx_HDU = 0):***
 
-  -  description: compute histogram of the HDU of interest on reduced frame
-  -  input: (INT) idx of HDU of interest
-  -  output: (TUPLE(NUMPY.ARRAY, NUMPY.ARRAY)) the first array correspond to the histogram and the second to the bin_edges (see https://numpy.org/doc/stable/reference/generated/numpy.histogram.html).
+  -  Description: Compute histogram of the HDU of interest on the reduced frame.
+  -  Input: (INT) Index of the HDU of interest.
+  -  Output: (TUPLE(NUMPY.ARRAY, NUMPY.ARRAY)) The first array corresponds to the histogram, and the second to the bin_edges (see [numpy.histogram](https://numpy.org/doc/stable/reference/generated/numpy.histogram.html)).
 
 </details>
 
@@ -612,8 +612,7 @@ this data structure is dedicated to manage appertures. It's take as input a 2D n
 
 ### Description:<a name="photometry-description"></a>
 
-In the context of our studies on asteroids from the main belt, we have used the various functions of Steroid to design our own photometric software capable of automatic or semi-automatic processing. With this new tool, we have significantly increased our ability to produce light curves. This software is included in Steroid in the photometry.py file. In this section, we will show how to use it.
-
+In the context of our studies on asteroids from the main belt, we have utilized the various functions of Steroid to develop our own photometric software capable of automatic or semi-automatic processing. With this new tool, we have significantly enhanced our ability to generate light curves. This software is integrated into Steroid in the `photometry.py` file. In this section, we will demonstrate how to use it.
 
 <details>
 
@@ -628,77 +627,88 @@ In the context of our studies on asteroids from the main belt, we have used the 
 
 ***Photometry(detector = None)***
 
-Photometry take only one optional paramters of type (Detector). Why optional? because *Photometry* also include some functions to save photometry but also some function to load. Indeed if users want to rework on some lightcurves already processed they don't need to redo all the work. *Photometry* can reload previous lightcurves. In this kind of situation, user don't need any *Detector* as the photometry was already done. He just need to build an empty *Photometry* object and use the method ***readCsv(path)***.
+*Photometry* takes only one optional parameter of type *Detector*. Why optional? Because *Photometry* also includes functions to save photometry but also functions to load. If users want to rework on some light curves already processed, they don't need to redo all the work. *Photometry* can reload previous light curves. In this kind of situation, the user doesn't need any *Detector* as the photometry was already done. They just need to build an empty *Photometry* object and use the method ***readCsv(path)***.
+
 
 **Methods:** <a name="photometry-methods-methods"></a>
 
 ***start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)***
 
-- description: launch the photometry according to some input parameters
-- input: (INT) number of reference stars (only in case of automatic procedure), (BOOLEAN) center or not appertures of center of brightness, (FLOAT) maximum value that automatic reference stars automaticly selected should not overstep. (FLOAT) the threshold to detect stars in the context of stars passages
+- Description: Launch the photometry according to some input parameters.
+- Input: 
+  - (INT) Number of reference stars (only in case of an automatic procedure).
+  - (BOOLEAN) Center or not appertures of the center of brightness.
+  - (FLOAT) Maximum value that automatically selected reference stars should not overstep.
+  - (FLOAT) The threshold to detect stars in the context of stars passages.
 
 ***plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5)*** 
 
-- description: Perform plot of differential photometry
-- input: - (INT) refS is the index of the star selected as reference \
-  &emsp;&emsp;&ensp; - (INT) ast is, in the case of multiple asteroids, the index of the asteroid that we want to plot. \
-  &emsp;&emsp;&emsp;&ensp;  If set to -1 all asteroids will be plot  \
-  &emsp;&emsp;&ensp; - (list) yRange range of y axis \
-  &emsp;&emsp;&ensp; - (INT) binning. use to bin lightcurve. automaticly choose if set to -1 \
-  &emsp;&emsp;&ensp; - (BOOLEAN) resc. rescale stars lightcurves close to asteroid's lightcurves \
-  &emsp;&emsp;&ensp; - (STRING) forma. format of the time.  refere to Time.FORMATS from astropy.time \
-  &emsp;&emsp;&ensp; - (array) xticks. new x ticks \
-  &emsp;&emsp;&ensp; - (BOOLEAN) inMag. if True, y axis display in magnitude. if False. Y axis display in instrumental flux. \
-  &emsp;&emsp;&ensp; - (BOOLEAN) rmExtremPoint. if True, will remove extreme points. To remove extrem points, the \
-  &emsp;&emsp;&emsp;&ensp; algorythm will fit a polynome then normalise asteroid's lightcurves with the polynome. \
-  &emsp;&emsp;&emsp;&ensp;  each points out of [median - C x Std, median + C x Std] are removed \
-  &emsp;&emsp;&ensp; - (FLOAT) cStd. this correspond de C. \
-  &emsp;&emsp;&ensp; - (INT) deg. Degree of the polynome. \
-  &emsp;&emsp;&ensp; - (BOOLEAN) displayRmFit. if True, display more plot to monitore rmExtremPoint. \
-  &emsp;&emsp;&ensp; - (BOOLEAN) starPassage. if True, will remove star's passages \
-  &emsp;&emsp;&ensp; - (INT) markerSize. Correspond to the size of marker \
-  &emsp;&emsp;&ensp; - (INT) lineWidths. Correspond to the thickness of marker 
+- Description: Perform a plot of differential photometry.
+- Input:
+  - (INT) `refS` is the index of the star selected as reference.
+  - (INT) `ast` is, in the case of multiple asteroids, the index of the asteroid that we want to plot. If set to -1, all asteroids will be plotted.
+  - (list) `yRange` range of the y-axis.
+  - (INT) `binning`. Use to bin the light curve. Automatically chosen if set to -1.
+  - (BOOLEAN) `resc`. Rescale stars' light curves close to the asteroid's light curves.
+  - (STRING) `forma`. Format of the time. Refer to `Time.FORMATS` from `astropy.time`.
+  - (array) `xticks`. New x ticks.
+  - (BOOLEAN) `inMag`. If True, the y-axis displays in magnitude. If False, the y-axis displays in instrumental flux.
+  - (BOOLEAN) `rmExtremPoint`. If True, will remove extreme points. To remove extreme points, the algorithm will fit a polynomial, then normalize asteroid's light curves with the polynomial. Each point out of [median - C x Std, median + C x Std] are removed.
+  - (FLOAT) `cStd`. This corresponds to C.
+  - (INT) `deg`. Degree of the polynomial.
+  - (BOOLEAN) `displayRmFit`. If True, display more plots to monitor `rmExtremPoint`.
+  - (BOOLEAN) `starPassage`. If True, will remove star's passages.
+  - (INT) `markerSize`. Corresponds to the size of the marker.
+  - (INT) `lineWidths`. Corresponds to the thickness of the marker.
 
 ***toDat(path, filename, binning = 1, forma = 'mjd', refS = -1, deg = 4, cStd = 2, displayRmFit = False)***
 
--  description: write files with extention .1, .2, .3 and .4. for each of them, the first column is the time. for others columns .1 correspond to data in instrumatal flux, .2 correspond to data in magnitude, .3 correspond to differential photometry and .4 correspond to differential photometry with averaged references star.
-- input: (STRING) path correspond to the path where to save those files. (STRING) correspond to the name to give to files. Other parameters are the same than ***plotDif***.
+
+markdown
+Copy code
+-  Description: Write files with extension .1, .2, .3, and .4. For each of them, the first column is the time. For others columns, .1 corresponds to data in instrumental flux, .2 corresponds to data in magnitude, .3 corresponds to differential photometry, and .4 corresponds to differential photometry with averaged reference stars.
+-  Input: 
+   - `path`: (STRING) Path where to save those files.
+   - `filename`: (STRING) Name to give to files.
+   - `Other` parameters are the same as ***plotDif***.
 
 ***log(path, name = "log.txt")***
   
-- description: will write a log file with information on: - data rejected, - star passages data, fwhm detected on each frames...
-- input: (STRING) path to save the log file. (STRING) name give to the log file. do not forget the extention
+-  Description: Write a log file with information on data rejected, star passages data, FWHM detected on each frame, etc.
+-  Input: 
+   - `path`: (STRING) Path to save the log file.
+   - `name`: (STRING) Name given to the log file. Don't forget the extension.
 
 
 ***toGif(path)***
 
-- description: toGif write a .gif image of all frames with appertures.
-- input: (STRING) path + file name with extention (ex: r"C:/.../myGif.gif")
+-  Description: Write a .gif image of all frames with apertures.
+-  Input: (STRING) Path + file name with extension (e.g., r"C:/.../myGif.gif").
 
 ***toCsv(path)***
 
-- description: write a csv file which summery the photometry. It's can be use as a backup with the method ***readCsv*** (see below).
-- input: (STRING) path + file name with extention (ex: r"C:/.../myCsv.csv")
+-  Description: Write a CSV file summarizing the photometry. It can be used as a backup with the method ***readCsv*** (see below).
+-  Input: (STRING) Path + file name with extension (e.g., r"C:/.../myCsv.csv").
   
 ***readCsv(path)***   
 
-- description: load a csv file produced with the method ***toCsv***. can be use to rework plots
-- input: (STRING) path + file name with extention (ex: r"C:/.../myCsv.csv")
+-  Description: Load a CSV file produced with the method ***toCsv***. Can be used to rework plots.
+-  Input: (STRING) Path + file name with extension (e.g., r"C:/.../myCsv.csv").
 
 ***showAp(idx)***
 
-- description: display the image at idx and show appertures position
-- intput: (INT) idx: index of the image in the image sequence
-
+-  Description: Display the image at the specified index and show aperture positions.
+-  Input: (INT) `idx`: Index of the image in the image sequence.
+  
 ***checkBox(ofs)***
 
-- description: display one of the first image of the sequence and show asteroids position at the begining and at the end of the sequence, plus boxes vertices, plus all object detected inside the boxe (BUT NOT ASTEROIDS)
-- input: (FLOAT) ofs: offset add to treshold to detect objects. To debug star passages, should be identic to the starPassageOfs parameter of the *start* method.
+-  Description: Display one of the first images of the sequence and show asteroid positions at the beginning and at the end of the sequence, along with box vertices and all objects detected inside the boxes (except asteroids).
+-  Input: (FLOAT) `ofs`: Offset added to the threshold to detect objects. To debug star passages, it should be identical to the starPassageOfs parameter of the *start* method.
 
 ***log(path, name = "log.txt)***
 
 - description: save a log.txt file containing informations on images not took into account because of bad detection, FWHM computed on each images and also images where star passages were detected.
-- input: (STRING) path of the directory (exemple: "/my/dir/"), (STRING) name of the file. by default it is set to "log.txt"
+- input: (STRING) `path` of the directory (exemple: "/my/dir/"), (STRING) `name` of the file. by default it is set to "log.txt"
 
 </details>
 
