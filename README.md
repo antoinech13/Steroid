@@ -636,10 +636,10 @@ In the context of our studies on asteroids from the main belt, we have utilized 
 
 - Description: Launch the photometry according to some input parameters.
 - Input: 
-  - (INT) Number of reference stars (only in case of an automatic procedure).
-  - (BOOLEAN) Center or not appertures of the center of brightness.
-  - (FLOAT) Maximum value that automatically selected reference stars should not overstep.
-  - (FLOAT) The threshold to detect stars in the context of stars passages.
+  - (INT) `nbOfStars`: Number of reference stars (only in case of an automatic procedure).
+  - (BOOLEAN) `center`: Center or not appertures of the center of brightness.
+  - (FLOAT) `maxVal`: Maximum value that automatically selected reference stars should not overstep.
+  - (FLOAT) `starPassageOfs`: The threshold to detect stars in the context of stars passages.
 
 ***plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5)*** 
 
@@ -670,7 +670,7 @@ Copy code
 -  Input: 
    - `path`: (STRING) Path where to save those files.
    - `filename`: (STRING) Name to give to files.
-   - `Other` parameters are the same as ***plotDif***.
+   - Other parameters are the same as ***plotDif***.
 
 ***log(path, name = "log.txt")***
   
@@ -717,7 +717,7 @@ Copy code
 
   <summary> 
     
-  ### How to use ? <a name="photometry-howtouse"></a>
+  ### How to use? <a name="photometry-howtouse"></a>
   
   </summary>
 
@@ -726,25 +726,25 @@ Copy code
 
 **First step:**
 
-The first thing to use photometry is to import it:
+
+The first step to using photometry is to import it:
 
     from photometry import Photometry
 
-*Photometry* object constructor take, as an optional parameter, an object *Detector*. 
-
-If the photometry was not yet done, then the users need to provide an object *Detector*. It is therefore important to include it:
+The *Photometry* object constructor takes, as an optional parameter, an object *Detector*.
+If the photometry has not been performed yet, users need to provide a *Detector* object. Therefore, it is important to include it:
 
     from detector import Detector
 
 
 **Second step:** 
 
-The next step is to build an object *Detector* (constructor is describ in the [Detector](#detector) section). To do this, we will use glob
+The next step is to build a *Detector* object (constructor is described in the [Detector](#detector) section). To do this, we will use `glob`.
 
      import glob
 
-an exemple of a piece of code that can be use to build an object *Detector*:
 
+An example of a piece of code that can be used to build a *Detector* object:
   ~~~
 
 #-----------set up all list of path for the raw data and bias, dark and flat data--------------
@@ -776,41 +776,46 @@ an exemple of a piece of code that can be use to build an object *Detector*:
 
 **Third step:**
 
-The next step is to launch *Detector* methods to correct images and to detect asteroids:
+The next step is to launch the methods of the *Detector* to correct images and detect asteroids:
 
     d.computeImagesCorrection(offsetTreshStarsDetection = 0, treshOnReduced = False)
     d.findAsteroid(offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2)
 
-***computeImagesDrift*** could me internally called in ***findAsteroid*** but we choose to let it like this to give more flexibility to users. Indeed, In this process, ***computeImagesDrift*** will take more time has it has to detect stars from all images of the sequence. Also it's the proccesse the less sensitive to the detection treshold. Indeed, it's only need 5 common stars on each frames to be able to correct images. According to this, users can earn time of execution setting up a high value of **offsetTreshStarsDetection**. For the same reason, **treshOnReduced** can be set to False.  
 
-On the other hand, ***findAsteroid*** is really sensityve to the data quality and to the treshold. More close to the optimal value the treshold will be and better the algorythm will perform. Therefor **offsetTreshStarsDetection** should be small for small adjustement and **treshOnReduced** should be set to True.
+***computeImagesDrift*** could be internally called in ***findAsteroid***, but we chose to keep it separate to provide more flexibility to users. In this process, ***computeImagesDrift*** takes more time as it needs to detect stars from all images in the sequence. However, it is the least sensitive process to the detection threshold. It only requires 5 common stars on each frame to be able to correct images. Given this, users can save execution time by setting a high value for `offsetTreshStarsDetection`. For the same reason, `treshOnReduced` can be set to False.
+
+On the other hand, ***findAsteroid*** is highly sensitive to data quality and the threshold. The closer the threshold is to the optimal value, the better the algorithm will perform. Therefore, `offsetTreshStarsDetection` should be small for fine adjustments, and `treshOnReduced` should be set to True.
 
 **Fourth step**
 
-The next step is to build an object *Photometry* and to launch the photometric processe.
+
+The next step is to create a *Photometry* object and initiate the photometric process.
 
     phot = Photometry(d)
     phot.start(nbOfStars, center = True, maxVal = 30000, starPassageOfs = 15000)
 
-**nbOfStars** is mandatory for now but it's only used in the case that you choose automatic reference stars selection. It's the number of reference stars that the code will search. 
+`nbOfStars` is currently mandatory, used in the case of automatic reference stars selection. It represents the number of reference stars that the code will search.
 
-**center** is a boolean and is a paramter to allow the code to center appertures on the "center of intensity" (in reference to the center of masse equation where the masse was changed by the intensity of pixels) or not. To be clear, apperture position will all time be set according to the initial positions, to the image drift and angle of rotation and for moving object, to the speed. But, if center is set to true, after placing all appertures, the code will simply perform a centring. In case of starpassages, the apperture will probably stay fixe on the stars the time that the astroid will pass in front but after, it will come back centred on the asteroid when the star will leave the apperture feild. Moreover, with the algorythm set up to delete stars passages, all the time where the apperture will stay focuse on the star will not be present on the final lightcurve.
+`center` is a boolean parameter that allows the code to center apertures on the "center of intensity" (in reference to the center of mass equation where the mass is replaced by the intensity of pixels) or not. To clarify, aperture positions will always be set according to the initial positions, image drift, angle of rotation, and for moving objects, their speed. If center is set to true, after placing all apertures, the code will perform a centering. In the case of star passages, the aperture will likely stay fixed on the stars while the asteroid passes in front. However, it will return to being centered on the asteroid after the star leaves the aperture field. Additionally, with the algorithm set up to delete star passages, any time the aperture stays focused on the star will not be present in the final light curve.
 
-**maxVal** correspond to the maximum value that reference stars automaticly select should not overstep.
+`maxVal` corresponds to the maximum value that automatically selected reference stars should not exceed.
 
-**starPassageOfs** have the same function as **treshOnReduced** for objects and methodes dedicated to detect objects. This one is dedicated to stars Passages detection. It's, by default, set to 15000, which detect only bright stars but can be set much lower to detect fainter stars.
+`starPassageOfs` serves a similar function as treshOnReduced for objects and methods dedicated to detecting objects. However, this one is specifically for star passage detection. It is, by default, set to 15000, which detects only bright stars but can be set much lower to detect fainter stars.
 
 **Fifth step:**
 
-As the photometry is done, the next step is to save results. To save plots, when a plot is done using ***plotDif***, a image of it can be save using the button on the window of the plot.
-To save the data, the best function is probably ***ToCsv*** which will save a csv file containing all infomations about the photometry, plus, information on stars passages if detected.
-The CSV file could be use as a backup using the function ***readCsv*** which will load in a **Photometry** the photometry previously done. 
-The function ***log*** will build a txt file containing additional informations.
+As the photometry is completed, the next step is to save the results. To save plots, when a plot is generated using ***plotDif***, an image of it can be saved using the button on the window of the plot.
 
+To save the data, the recommended function is ***ToCsv***, which will save a CSV file containing all information about the photometry, plus information on star passages if detected. The CSV file could be used as a backup using the function ***readCsv***, which loads the previously done photometry into a *Photometry* object.
+
+The function ***log*** will create a TXT file containing additional information.
 
     phot.toCsv("/path/of/your/directory/myCsv.csv") #save CSV file
+    phot.log("/path/of/your/directory/") # create a log.txt file
 
-in an other script (or in the same), to reload a CSV file:
+When the photometry is completed, and the files are saved (with the most important one being the CSV file), it's possible to come back to it at any moment using the function ***readCsv***. To do this, you don't have to redo all the steps done before. Indeed, as the photometry was already done, we don't need the Detector object, and we don't even need the images. The only thing that we need is the *Photometry* object. 
+
+In a new script named mySecondScript.py or in a new Python console, you can use these commands:
 
     phot = Photometry()  # this line is only needed if you didn't build any Photometry object before (in a new script for exemple)
                          # no need detector object as here we are just loading previous photometry. 
@@ -821,7 +826,7 @@ in an other script (or in the same), to reload a CSV file:
 
 **Conclusion**
 
-The final code should look like this:
+The final code, to perform and save the photometry should look like this:
 
  ~~~
 
@@ -867,9 +872,11 @@ phot.start(nbOfStars = 3, center = True, maxVal = 30000, starPassageOfs = 15000)
 
 phot.plotDif(refS = 0, ast = -1, yRange = None, binning = 1, resc = True, forma = 'jd', xtick = None, inMag = True, rmExtremPoint = False, cStd = 2, deg = 4, displayRmFit = False, starPassage = False, markerSize = 100, lineWidths = 5)
 phot.toCsv("/path/of/your/directory/myCsv.csv")
+phot.log("/path/of/your/directory/")
  ~~~
 
-if loading is need in another file:
+
+To load previous photometry already processed, the code should look like this:
 
     from photometry import Photometry
 
@@ -878,7 +885,7 @@ if loading is need in another file:
                          
     phot.readCsv("/path/of/your/directory/myCsv.csv")
 
-**Caution:** in case where users use semi-automatic procedures, the selection on images are done with the left click and when selection is finish press the right click.
+**Caution**: In case where users use semi-automatic procedures, the selection on images is done with the left click, and when the selection is finished, press the right click.
 
 
 </details>
