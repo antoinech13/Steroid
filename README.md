@@ -41,6 +41,14 @@ Steroid is a Python package designed to assist users in creating their own autom
  
 ## Code Structure <a name="code-structure"></a>
 
+This diagram represents the various project files and their dependencies among them:
+
+![alt text](https://github.com/antoinech13/Steroid/blob/main/packages.link.png)
+
+This diagram represents the UML class digram of the project:
+
+![alt text](https://github.com/antoinech13/Steroid/blob/main/classes.link.png)
+
 ## Classes Description <a name="classes-description"></a>
 
 
