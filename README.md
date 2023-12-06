@@ -26,7 +26,7 @@ Steroid is a Python package designed to assist users in creating their own autom
         1. [Description](#datastruct-seqmanager-description)
         2. [Constructor](#datastruct-seqmanager-constructor)
         3. [Methods](#datastruct-seqmanager-methods)
-     4. [Appertures](#datastruct-appertures)
+     4. [Apertures](#datastruct-appertures)
         1. [Description](#datastruct-appertures-description)
         2. [Constructor](#datastruct-appertures-constructor)
         3. [Methods](#datastruct-appertures-methods)
@@ -476,17 +476,17 @@ The seq attribute represents a list of paths to raw images (STRING) in this clas
 
   <summary> 
     
-  ### Appertures:<a name="datastruct-appertures"></a>
+  ### Apertures:<a name="datastruct-"></a>
   
   </summary>
 
-**Description:** <a name="datastruct-appertures-description"></a>
+**Description:** <a name="datastruct--description"></a>
 
 This data structure is dedicated to managing apertures. It takes as input a 2D numpy array of aperture positions with aperture sizes and can handle photometry.
 
-**Constructor:** <a name="datastruct-appertures-constructor"></a>
+**Constructor:** <a name="datastruct--constructor"></a>
 
-***Appertures(positions, idxOfStars = None, r = 3, ri = 6, re = 8):*** 
+***Apertures(positions, idxOfStars = None, r = 3, ri = 6, re = 8):*** 
 
 - Positions: 2D numpy array of positions of apertures for all objects. The first rows should represent targets, and the last rows should represent reference stars for differential photometry if needed.
   - `idxOfStars`: (INT) Index of the row in positions where the positions of reference stars' apertures are stored.
@@ -494,7 +494,7 @@ This data structure is dedicated to managing apertures. It takes as input a 2D n
   - `ri`: (FLOAT) Radius of the dead area of the apertures.
   - `re`: (FLOAT) Radius of the background aperture.
 
-**Methods:** <a name="datastruct-appertures-methods"></a>
+**Methods:** <a name="datastruct--methods"></a>
 
 ***photom(img, key, forma, center = False, exposure = None):***
 
@@ -645,7 +645,7 @@ In the context of our studies on asteroids from the main belt, we have utilized 
 - Description: Launch the photometry according to some input parameters.
 - Input: 
   - (INT) `nbOfStars`: Number of reference stars (only in case of an automatic procedure).
-  - (BOOLEAN) `center`: Center or not appertures of the center of brightness.
+  - (BOOLEAN) `center`: Center or not apertures of the center of brightness.
   - (FLOAT) `maxVal`: Maximum value that automatically selected reference stars should not overstep.
   - (FLOAT) `starPassageOfs`: The threshold to detect stars in the context of stars passages.
 
