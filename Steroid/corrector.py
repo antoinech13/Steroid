@@ -59,7 +59,7 @@ class Corrector:
         return self.seqManager.getInfo(idx)
     
     def getHeader(self, idx = 0, HDU = 0):
-        return self.seqManager.getHeader(idx)
+        return self.seqManager.getHeader(idx, HDU)
     
     def histogram(self, idx = 0 , idx_HDU = 0):
         return self.seqManager.histogram(idx, idx_HDU)
@@ -322,7 +322,7 @@ class Corrector:
             if len(element) == 0 or len(self.angles[cpt]) == 0 or np.isnan(self.avgAng(cpt)):
                 
                 if type(self.starsPosition[cpt]) != type(None):
-                   starDetected =  len(self.starsPosition[cpt])
+                    starDetected =  len(self.starsPosition[cpt])
                 else:
                     starDetected = 0
                 

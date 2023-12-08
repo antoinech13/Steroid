@@ -69,6 +69,27 @@ class Detector(Corrector):
         print('done')
 
     def findDifStar(self, stars1, stars2, eps):
+        """
+        After image correction, try to find which object are present at a position on a frame and not present at the same position in an other frame.
+
+        Parameters
+        ----------
+        stars1 : list
+            DESCRIPTION. list of object detected on the frame 1
+        
+        stars2 : list
+            DESCRIPTION. list of object detected on the frame 2
+        
+        eps: int, optional
+            DESCRIPTION. represent the minimum distance (in pixels) that two object should be from each other on the first and the last frame to be detected as star or moving object 
+        
+        Returns
+        -------
+        list of all object present in stars1 and not in stars2 at the same position 
+
+        """
+        
+        
         dif = []
         isStar = False
         for i in stars1:
@@ -111,22 +132,26 @@ class Detector(Corrector):
         avg2 = np.nanmean(img2)
 
         
-        if (starPosition == np.asarray([1422., 381])).all():
-            print('max1', max1, "max2", max2, "avg1", avg1, "avg2", avg2, "med1", np.nanmedian(img1), "med2", np.nanmedian(img2))
-        
         if max1 == 0 or max2 == 0:
             return True
         
         elif max1 < avg1 or max2 < avg2:
             return False
-        print("IA", img1.shape, img1.shape ,self.model.predict(img2.reshape(1,20,20,1))[0,0] ,  self.model.predict(img1.reshape(1,20,20,1))[0,0])
-        return self.model.predict(img2.reshape(1,20,20,1))[0,0] > 0.5 and  self.model.predict(img1.reshape(1,20,20,1))[0,0] > 0.5
+        
+        modelPredictionOnImage1 = self.model.predict(img1.reshape(1,20,20,1))[0,0]
+        modelPredictionOnImage2 = self.model.predict(img2.reshape(1,20,20,1))[0,0]
+        
+        print("IA:  im1 shape: ", img1.shape, " im1 prediction: ", modelPredictionOnImage1, " im2 shape: ", img2.shape , " im2 prediction: ", modelPredictionOnImage2  )
+        
+        return modelPredictionOnImage2 > 0.5 and  modelPredictionOnImage1 > 0.5
         
     def isOutOfBoundaries(self, pos, eps = 20):
+        
         extrema = self.findDriftExtrema()
+        
         return (pos + extrema + eps > self.shape).any() or (pos - extrema - eps < np.zeros((2))).any()
     
-    def extractAst(self, dif, idxofFirstImg, idxOfSecondIng, distMax = 200):
+    def extractAst(self, dif, idxofFirstImg, idxOfSecondIng, distMax = 400):
         ast = []
         idx = []
         time0 = self.getImg(0).getTime(self.key, self.format)
@@ -137,9 +162,9 @@ class Detector(Corrector):
         for i, e in enumerate(dif):
             for j in range(i, len(dif)):
                 f = dif[j]
-                # print("e: ", e, "f: ", f,"dist: ", Utils.dist(e,f) < distMax, "e out boundarie: ", not self.isOutOfBoundaries(e), "f out boundarie: ", not self.isOutOfBoundaries(f), "i is present: ", not Utils.isPresent(idx, i), "i!=j: ", i != j, "e not isstar: ", not self.isStar(e, idxofFirstImg, idxOfSecondIng), "f not isstar: ", not self.isStar(f, idxofFirstImg, idxOfSecondIng))
+                
                 if Utils.dist(e,f) < distMax and not self.isOutOfBoundaries(e) and not self.isOutOfBoundaries(f) and not Utils.isPresent(idx, i) and i != j and not self.isStar(e, idxofFirstImg, idxOfSecondIng) and not self.isStar(f, idxofFirstImg, idxOfSecondIng):
-                    # print("idx: ", Utils.isPresent(idx, i),idx, i, j, 'eeee: ', e, ' fff: ', f)
+                   
                     print("e: ", e, "f: ", f,"dist: ", Utils.dist(e,f) < distMax, "e out boundarie: ", not self.isOutOfBoundaries(e), "f out boundarie: ", not self.isOutOfBoundaries(f), "i is present: ", not Utils.isPresent(idx, i), "i!=j: ", i != j, "e not isstar: ", not self.isStar(e, idxofFirstImg, idxOfSecondIng), "f not isstar: ", not self.isStar(f, idxofFirstImg, idxOfSecondIng))
                     self.asteroidsSpeed.append((e-f)/(time2 - time1).to_value('sec'))
                     ast.append(e - self.asteroidsSpeed[-1] * (time0 - time1).to_value('sec'))
@@ -152,7 +177,8 @@ class Detector(Corrector):
         return ast
 
     def findBestIdx(self, plot = False):
-        nbOfStarsDetected = np.zeros((len(self.starsPosition)))
+        
+        nbOfStarsDetected = np.zeros(( len(self.starsPosition) ))
         
         for i in range(len(self.starsPosition)):
             nbOfStarsDetected[i] = len(self.starsPosition[i])
@@ -182,6 +208,22 @@ class Detector(Corrector):
         return idxFirst, idxLast
     
     def findAsteroid(self, offsetTreshAstsDetection = 0, treshOnReduced = False, eps = 2):
+        """
+        find asteoird based on what object are present on first frame and not on the last one and reciprocaly. 
+
+        Parameters
+        ----------
+        offsetTreshAstsDetection : float, optional
+            DESCRIPTION. Offset add to the treshold value .The default is 0.
+        
+        treshOnReduced: boolean, optional
+            DESCRIPTION. if true, will estimate the threshold value on reduced frames. The default is False
+        
+        eps: int, optional
+            DESCRIPTION. represent the minimum distance (in pixels) that two object should be from each other on the first and the last frame to be detected as star or moving object 
+
+        """
+        
         
         idxOfFirst, idxOfSecond = self.findBestIdx()
     
@@ -192,19 +234,16 @@ class Detector(Corrector):
         stars1 = np.asarray(self.getImg(idxOfFirst).findStars(self.getImg(idxOfFirst).getTresh(treshOnReduced) + offsetTreshAstsDetection, treshOnReduced))  #np.median(self.getData()) + np.std(self.getData())*0.4
         stars1 = self.correctStarsFromRot(stars1, idxOfFirst)
         stars1 = stars1 - dr.astype(float)
+        
         stars2 = np.asarray(self.getImg(idxOfSecond).findStars(self.getImg(idxOfFirst).getTresh(treshOnReduced) + offsetTreshAstsDetection, treshOnReduced)) #- dr  #+ np.std(self.getData(idxOfSecond))
         stars2 = self.correctStarsFromRot(stars2, idxOfSecond)
         stars2 = stars2 - dr2.astype(float)
         
-        Utils.imshowstar(self.getData(idxOfFirst), stars1, -self.avgAng(idxOfFirst), dr)
-        Utils.imshowstar(self.getData(idxOfSecond), stars2, -self.avgAng(idxOfSecond), dr2)
-        Utils.imshowstar(self.getData(idxOfFirst), stars2)
         
         print("dif1:", self.findDifStar(stars1, stars2, eps), "dif2:",self.findDifStar(stars2, stars1, eps))
         dif = self.findDifStar(stars1, stars2, eps) + self.findDifStar(stars2, stars1, eps)
         self.asteroidsPositionFirstImage = self.extractAst(dif, idxOfFirst, idxOfSecond)
         
-        Utils.imshowstar(self.getData(idxOfFirst), np.asarray(dif), -self.avgAng(idxOfFirst), dr)
         
     def findDriftExtrema(self):
         maxx = -100000

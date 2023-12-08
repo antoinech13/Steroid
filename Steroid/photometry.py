@@ -36,7 +36,7 @@ from utils import *
 from exceptions import *
 from detector import Detector
 from occultation import *
-from data_structurs import Appertures
+from data_structurs import Apertures
 from singleton import Singleton
 
 from astropy.time import Time
@@ -304,7 +304,7 @@ class Photometry:
                         self.starPassages[ast, i] = True
                         break
             
-            self.Appertur.append(Appertures(ap, len(self.detector.asteroidsPositionFirstImage), r, ri, re))
+            self.Appertur.append(Apertures(ap, len(self.detector.asteroidsPositionFirstImage), r, ri, re))
             self.results.append(self.Appertur[-1].photom(self.detector.getImg(i), self.detector.key, self.detector.format, self.detector.isTimeCentred, self.detector.seqManager.getExpo(i, self.detector.exposurKey)))
             
             
@@ -359,7 +359,12 @@ class Photometry:
     
     def getTime(self, binning, forma= "jd"):
          t = Utils.binn(binning, self.extractTime())
-         t = Time(t, format = "jd", precision = len(str(t[0]).split('.')[-1]))
+        
+         precision = len(str(t[0]).split('.')[-1])
+         if precision > 9:
+             precision = 9
+         
+         t = Time(t, format = "jd", precision= precision)
          return self.timeFormat(t, forma)
     
     
@@ -444,8 +449,7 @@ class Photometry:
         
         print(stars.shape)
         
-        x = Utils.binn(binning, self.extractTime())
-        x = Time(x, format = 'jd', precision = len(str(x[0]).split('.')[-1]))
+        x = self.toTime(binning)
         x = self.timeFormat(x, forma)
         plt.figure()
         if selection == None:
@@ -483,8 +487,8 @@ class Photometry:
             print("result in ADU")
             asts = Utils.binn(binning, self.astPhot())
             stars = Utils.binn(binning, self.starsPhot())
-        x = Utils.binn(binning, self.extractTime())
-        x = Time(x, format = 'jd', precision = len(str(x[0]).split('.')[-1]))
+        
+        x = self.toTime(binning)
         x = self.timeFormat(x, forma)
         
         for i in range(asts.shape[1]):
@@ -537,11 +541,20 @@ class Photometry:
             asts.append(ast)
         return np.asarray(asts)
     
-    
+    def toTime(self, binning):
+        t = Utils.binn(binning, self.extractTime())
+        
+        precision = len(str(t[0]).split('.')[-1])
+        
+        if precision > 9:
+            precision = 9
+        
+        return Time(t, format = 'jd', precision = precision)
+        
     def timeFormat(self, tArr, forma):
         newArr = []
-        for i in tArr:
-            newArr = tArr.to_value(forma)
+        #for i in tArr:
+        newArr = tArr.to_value(forma)
         return newArr
     
     def toCsv(self, path):
@@ -912,8 +925,7 @@ class Photometry:
         
         if binning == -1: # Auto binning
         
-            t = Utils.binn(1, self.extractTime())
-            t = Time(t, format = 'jd', precision = len(str(t[0]).split('.')[-1]))
+            t = self.toTime(1)
             t = self.timeFormat(t, 'jd')
             
             dth = (t[-1] - t[0])*24
@@ -948,8 +960,7 @@ class Photometry:
             linesByAsts.append([ [], [], [], [] ])
             
             
-        t = Utils.binn(binning, self.extractTime())
-        t = Time(t, format = 'jd', precision = 6)
+        t = self.toTime(binning)
         t = self.timeFormat(t, forma)
         
 
@@ -1146,7 +1157,7 @@ if __name__ == '__main__':
     
     
     path = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\Suh\20-10-22Suh\2020-10-22_gunlod/"
-    res = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\Suh/res\20-10-22Suh\pres/"
+    res = r"C:\Users\antoi\OneDrive\Documents\PHD\lightcurve\entrainement\Suh\res\20-10-22Suh\pres/"
     
 
     seq = list(np.asarray(glob.glob(path + "*gun*.f*t*"))[:])
@@ -1168,10 +1179,10 @@ if __name__ == '__main__':
         print('FLAT EMPTY')
 
     d = Detector(seq, flatSeq = flat, biasSeq = bias , darkSeq = dark)
-    d.computeImagesCorrection(1000, True)
+    d.computeImagesCorrection(1500, True)
     print('done')    
 
-    d.findAsteroid(700, True)
+    d.findAsteroid(1000, True)
     
     phot = Photometry(d)
     phot.start(3, False, starPassageOfs = 500)

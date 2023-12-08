@@ -13,6 +13,6 @@ class NoneDectector(Exception):
     def __init__(self, message = "Decetor = None in Potometry object"):
         super().__init__(message)
         
-class AppertureOnTheEdge(Exception):
+class ApertureOnTheEdge(Exception):
     def __init__(self, imageIdx):
         super().__init__("apperture reach the edge on frame " + str(imageIdx))

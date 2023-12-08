@@ -18,51 +18,6 @@ from scipy.optimize import curve_fit
 from exceptions import *
 from utils import *
 
-class Star:
-    def __init__(self, s, eps = 5):
-        self.s = s
-        self.eps = eps
-        
-    def __add__(self, other):
-        if isinstance(other, Star):
-            return Star(self.s + other.s)
-        
-        return Star(self.s + other)
-    
-    def __sub__(self, other):
-        if isinstance(other, Star):
-            return Star(self.s - other.s)
-        return Star(self.s - other)
-    
-    def __truediv__(self, other):
-        if isinstance(other, Star):
-            return Star(self.s / other.s)
-        return Star(self.s / other)
-    
-    def __mul__(self, other):
-        if isinstance(other, Star):
-            return Star(self.s * other.s)
-        return Star(self.s * other)
-    
-    def __eq__(self, other):
-        if isinstance(other, Star):
-            return (np.abs(self.s - other.s) <= self.eps).all()
-        return (np.abs(self.s - other) <= self.eps).all()
-    
-    def __str__(self):
-        return str(self.s[0]) + " " + str(self.s[1])
-    
-    def __len__(self):
-        return self.s.shape[0]
-    
-    def __pow__(self, p):
-        return self.s**p
-    
-    def toNumpyt(self):
-        return np.asarray(self.s)
-    
-    def distance(self, other):
-        return np.sum((np.asarray(self.s) - np.asarray(other.s))**2)**0.5
     
 class Triangle:
     def __init__(self, s1, s2, s3, eps = 2):
@@ -119,7 +74,7 @@ class Triangle:
         sign2 = np.sign(np.cross(v2,v2b))
         sign3 = np.sign(np.cross(v3,v3b))
         
-        # print("sign,", sign1, sign2, sign3)
+
         
         c1 = scal1 / (self.d1() * other.d1()) 
         c2 = scal2 / (self.d2() * other.d2())
@@ -129,7 +84,7 @@ class Triangle:
         theta2 = np.arccos(c2)
         theta3 = np.arccos(c3)
         
-        # print("sign,", sign1, sign2, sign3,c1,c2,c3, theta1,theta2,theta3)
+     
         
         if c1 > 1:
             theta1 = 0
@@ -160,7 +115,7 @@ class Triangle:
         angle2 = -sign*theta2
         angle3 = -sign*theta3
      
-        # print('ang', (angle1 + angle3 + angle2)/3)
+     
         return (angle1 + angle3 + angle2)/3
     
     def computeDistance(self, other):
@@ -355,7 +310,7 @@ class SeqManager:
         
         
 
-class Appertures:
+class Apertures:
     def __init__(self, positions, idxOfStars = None, r = 3, ri = 6, re = 8):
         self.positions = positions
         self.idxOfStars = idxOfStars
@@ -412,12 +367,10 @@ class Appertures:
         phot['annulus_median'] = bkgMedian
         phot['aper_bkg'] = bkgMedian * self.aperture.area
         phot['aper_sum_bkgsub'] = phot['aperture_sum'] - phot['aper_bkg']
-        # for col in phot.colnames:
-        #     phot[col].info.format = '%.8g'  # for consistent table output
+        
         return phot
     
-    # def isInCenter(p):
-    #     if Utils.dist()
+
     
     
 
@@ -470,6 +423,9 @@ class Fit():
         val = str(self.getHeader(HDU)[key])
         precision = len(val.split('.')[-1])
         
+        if precision > 9:
+            precision = 9
+        
         return Time(val, format = forma, precision = precision)
         
     
@@ -503,8 +459,7 @@ class Fit():
         
         startingPoint = [maxx, x[idxOfMax], 1]
         
-        # def func(x, a, x0, sigma):
-        #     return a*np.exp(-(x-x0)**2/(2*sigma**2))
+       
         def func(x, a, x0, sigma):
             r = np.log10(a*np.exp(-(x-x0)**2/(2*sigma**2)))
             r[r<0] = 0
@@ -597,8 +552,7 @@ class Fit():
     def reducedHistogram(self, idx_HDU = 0):
         return np.histogram(self.getReducedData(idx_HDU).astype(int), bins=np.linspace(0,2**16,2**16+1))
     
-         
-         
+
 class TimeStruct:
     def __init__(self, jd1, jd2):
         self.jd1 = jd1
